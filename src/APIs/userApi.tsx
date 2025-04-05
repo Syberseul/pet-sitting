@@ -4,7 +4,7 @@ import { http } from "@/util";
 
 export const signUp = async (
   user: UserData
-): Promise<{ data?: ApiResponse<UserStoreData>; error?: errorStructure }> => {
+): Promise<{ data?: UserStoreData; error?: errorStructure }> => {
   try {
     const { data } = await http.request<ApiResponse<UserStoreData>>({
       // 修改这里
@@ -12,7 +12,7 @@ export const signUp = async (
       method: "POST",
       data: user,
     });
-    return { data };
+    return data;
   } catch (error: any) {
     return { error };
   }

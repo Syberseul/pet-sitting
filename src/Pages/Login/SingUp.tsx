@@ -1,9 +1,11 @@
 import { signUp } from "@/APIs/userApi";
 
 import { Props, UserSignUpFailedInfo } from "@/Interface/userInterface";
+import { userLogin } from "@/store/modules/userStore";
 
 import { Alert, Button, Form, Input } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const validateMessages = {
@@ -29,6 +31,7 @@ function SingUp(props: Props) {
   const { toggleShowSignUp } = props;
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [signUpFailed, setSignUpFailed] = useState<UserSignUpFailedInfo>({
     showSignUpFailed: false,
@@ -48,13 +51,13 @@ function SingUp(props: Props) {
 
     const res = await signUp(user);
 
-    if (!res.error) {
+    if (!res.error && res.data) {
       navigate("/dashboard");
-      // Use Redux to save logged in user details
+      dispatch(userLogin(res.data));
     } else
       setSignUpFailed({
         showSignUpFailed: true,
-        errMsg: res.error.message,
+        errMsg: res.error ? res.error.message : "error",
       });
   };
 
