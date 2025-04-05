@@ -10,17 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "@reduxjs/toolkit": "^2.6.1",
+    "antd": "^5.24.6",
+    "axios": "^1.8.4",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.4.1",
+    "sass": "^1.86.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/react": "^18.0.10",
-    "@types/react-dom": "^18.0.4",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
     "@vitejs/plugin-react": "^4.3.4",
     "craco": "^0.0.3",
     "eslint": "^9.21.0",
