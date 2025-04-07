@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { lazy, Suspense } from "react";
 
+import { ProtectedRoutes } from "./ProtectedRoute";
+
 const lazyLoad = (factory: () => Promise<{ default: React.ComponentType }>) => {
   const Component = lazy(factory);
   return (
@@ -26,7 +28,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: lazyLoad(() => import("@/Pages/Dashboard")),
+        element: (
+          <ProtectedRoutes>
+            {lazyLoad(() => import("@/Pages/Dashboard"))}
+          </ProtectedRoutes>
+        ),
       },
     ],
   },

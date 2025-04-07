@@ -23,6 +23,7 @@ const userStore = createSlice({
       state.role = action.payload.role;
       state.uid = action.payload.uid;
 
+      Object.assign(state, action.payload);
       localStorage.setItem("userInfo", JSON.stringify(state));
     },
     userLogout(state) {

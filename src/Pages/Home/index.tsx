@@ -6,20 +6,26 @@ import { UserOutlined } from "@ant-design/icons";
 import type { MenuInfo } from "rc-menu/lib/interface";
 
 import "./index.scss";
+import { useUserState } from "@/util/customHooks";
 
 const { Header, Content, Footer } = Layout;
 
-const navItem = [
-  {
-    key: "/dashboard",
-    label: "Dashboard",
-  },
-];
-
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const user = useUserState();
 
   const [selectedKey, setSelectedKey] = useState<string[]>([]);
+
+  const navItem = [
+    ...(user.uid
+      ? [
+          {
+            key: "/dashboard",
+            label: "Dashboard",
+          },
+        ]
+      : []),
+  ];
 
   const handleClickMenu = (e: MenuInfo) => {
     navigate(e.key);

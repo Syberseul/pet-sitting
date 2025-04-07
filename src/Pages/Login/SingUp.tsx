@@ -1,4 +1,4 @@
-import { signIn, signUp } from "@/APIs/userApi";
+import { signUp } from "@/APIs/userApi";
 import { isSignUpSuccess } from "@/Interface/authInterface";
 
 import { Props, UserSignUpFailedInfo } from "@/Interface/userInterface";
@@ -8,25 +8,7 @@ import { Alert, Button, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-const validateMessages = {
-  required: "${label} is required!",
-  types: {
-    email: "${label} is not a valid email!",
-    number: "${label} is not a valid number!",
-  },
-};
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 6 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 14 },
-  },
-};
+import { formItemLayout, validateMessages } from "./utilConsts/authForm";
 
 function SingUp(props: Props) {
   const { toggleShowSignUp } = props;
@@ -50,7 +32,7 @@ function SingUp(props: Props) {
   const onFinish = async (values: any) => {
     const { user } = values;
 
-    const res = await signIn(user);
+    const res = await signUp(user);
 
     if (isSignUpSuccess(res)) {
       navigate("/dashboard");
