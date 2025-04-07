@@ -1,17 +1,7 @@
-export interface ApiResponse<T> {
-  data?: T;
-  error?: errorStructure;
-  token?: string;
-  refresh_token: string;
-}
+import { SignUpErrorResponse } from "./authInterface";
 
-export interface ResType<T> {
+export interface ApiError {
   message: string;
-  data: T;
-}
-
-export interface errorStructure {
-  message: string;
-  code?: number;
-  details?: any;
+  code: number;
+  details?: SignUpErrorResponse | any;
 }

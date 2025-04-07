@@ -3,10 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserStoreData } from "@/Interface/userInterface";
 
 const initialUserDataState: UserStoreData = {
+  uid: "",
   email: "",
-  name: "",
+  username: "",
   token: "",
-  refresh_token: "",
+  refreshToken: "",
   role: 11,
 };
 
@@ -16,10 +17,11 @@ const userStore = createSlice({
   reducers: {
     userLogin(state, action: PayloadAction<UserStoreData>) {
       state.email = action.payload.email;
-      state.name = action.payload.name;
+      state.username = action.payload.username;
       state.token = action.payload.token;
-      state.refresh_token = action.payload.refresh_token;
+      state.refreshToken = action.payload.refreshToken;
       state.role = action.payload.role;
+      state.uid = action.payload.uid;
 
       localStorage.setItem("userInfo", JSON.stringify(state));
     },

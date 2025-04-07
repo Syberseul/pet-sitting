@@ -1,19 +1,41 @@
-import { ApiResponse, errorStructure } from "@/Interface/apiInterface";
-import { UserData, UserStoreData } from "@/Interface/userInterface";
+import {
+  SignInRequest,
+  SignUpErrorResponse,
+  SignUpRequest,
+  SignUpSuccessResponse,
+} from "@/Interface/authInterface";
 import { http } from "@/util";
 
 export const signUp = async (
-  user: UserData
-): Promise<{ data?: UserStoreData; error?: errorStructure }> => {
+  user: SignUpRequest
+): Promise<SignUpSuccessResponse | SignUpErrorResponse> => {
   try {
-    const { data } = await http.request<ApiResponse<UserStoreData>>({
-      // 修改这里
+    const response = await http.request<SignUpSuccessResponse>({
       url: "/register",
       method: "POST",
       data: user,
     });
-    return data;
-  } catch (error: any) {
-    return { error };
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as SignUpErrorResponse;
+    return apiError;
+  }
+};
+
+export const signIn = async (
+  user: SignInRequest
+): Promise<SignUpSuccessResponse | SignUpErrorResponse> => {
+  try {
+    const response = await http.request<SignUpSuccessResponse>({
+      url: "/login",
+      method: "POST",
+      data: user,
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as SignUpErrorResponse;
+    return apiError;
   }
 };

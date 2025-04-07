@@ -1,4 +1,5 @@
-import { signUp } from "@/APIs/userApi";
+import { signIn, signUp } from "@/APIs/userApi";
+import { isSignUpSuccess } from "@/Interface/authInterface";
 
 import { Props, UserSignUpFailedInfo } from "@/Interface/userInterface";
 import { userLogin } from "@/store/modules/userStore";
@@ -49,15 +50,15 @@ function SingUp(props: Props) {
   const onFinish = async (values: any) => {
     const { user } = values;
 
-    const res = await signUp(user);
+    const res = await signIn(user);
 
-    if (!res.error && res.data) {
+    if (isSignUpSuccess(res)) {
       navigate("/dashboard");
-      dispatch(userLogin(res.data));
+      dispatch(userLogin(res));
     } else
       setSignUpFailed({
         showSignUpFailed: true,
-        errMsg: res.error ? res.error.message : "error",
+        errMsg: res.error ? res.error : "error",
       });
   };
 

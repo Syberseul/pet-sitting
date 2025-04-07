@@ -16,7 +16,7 @@ requestInstance.interceptors.request.use(
 
 requestInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data;
+    return response;
   },
   (error: AxiosError) => {
     const apiError = {

@@ -3,20 +3,21 @@ export interface Props {
 }
 
 export interface UserData {
-  email: string;
+  username: string;
   password: string;
-  name?: string;
+  email: string;
+}
+
+export interface UserStoreData {
+  uid: string;
+  email: string;
+  username: string;
+  token: string;
+  refreshToken: string;
+  role: number;
 }
 
 export interface UserSignUpFailedInfo {
   showSignUpFailed: boolean;
   errMsg: string;
-}
-
-export interface UserStoreData {
-  email: string;
-  name: string;
-  token: string;
-  refresh_token: string;
-  role: number;
 }
