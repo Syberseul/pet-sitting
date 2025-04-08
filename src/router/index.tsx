@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
         element: lazyLoad(() => import("@/Pages/Login")),
       },
       {
-        path: "/details",
+        path: "/details/:id?",
         element: lazyLoad(() => import("@/Pages/Details")),
       },
       {

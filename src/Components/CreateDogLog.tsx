@@ -88,7 +88,7 @@ const CreateDogLog: React.FC = () => {
     const res = await createDogLog(formData);
 
     if (isCreateLogSuccess(res)) {
-      navigate("/details");
+      navigate(`/details/${res.data.dogLogId}`);
     } else console.log(res.error);
 
     setOpen(false);
