@@ -78,8 +78,6 @@ const Dashboard: React.FC = () => {
       breedName: getBreedInfo(formValues.breedType)?.searchName,
       notes: noteLists,
     };
-    console.log(formData);
-
     await createDogLog(formData);
   };
 
@@ -218,7 +216,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleRemoveNote = (index: number) => {
-    const modifiedList = noteLists.filter((node, idx) => index != idx);
+    const modifiedList = noteLists.filter((_node, idx) => index != idx);
     setNoteLists(modifiedList);
   };
 
