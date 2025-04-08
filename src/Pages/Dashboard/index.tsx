@@ -29,9 +29,11 @@ import type { GetProps } from "antd";
 import {
   BreedInfo,
   DogFormDetails,
+  isCreateLogSuccess,
   NoteDetails,
 } from "@/Interface/dogInterface";
 import { createDogLog } from "@/APIs/dogApi";
+import { useNavigate } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 
@@ -67,6 +69,8 @@ const Dashboard: React.FC = () => {
   const [noteLists, setNoteLists] = useState<string[]>([]);
   const [form] = Form.useForm();
 
+  const navigate = useNavigate();
+
   const treeData = transformBreedMapToTree();
 
   const onFinish = async () => {
@@ -78,7 +82,11 @@ const Dashboard: React.FC = () => {
       breedName: getBreedInfo(formValues.breedType)?.searchName,
       notes: noteLists,
     };
-    await createDogLog(formData);
+    const res = await createDogLog(formData);
+
+    if (isCreateLogSuccess(res)) {
+      navigate("/details");
+    } else console.log(res.error);
   };
 
   const onFormLayoutChange = ({ size }: { size: SizeType }) => {

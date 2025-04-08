@@ -204,11 +204,6 @@ export interface DogTreeNode {
   [key: string]: any;
   children?: DogTreeNode[];
 }
-
-export interface CreateDogSuccessResponse {}
-
-export interface CreateDogErrorResponse {}
-
 export interface DogFormDetails {
   breedType: string;
   breedName: string;
@@ -220,6 +215,15 @@ export interface DogFormDetails {
   ownerName?: string;
   contactNo?: string;
   notes: string[];
+  tourList?: DogTourList[];
+  dogLogId?: string;
+}
+
+export interface DogTourList {
+  startDate: string;
+  endDate: string;
+  dailyPrice: number;
+  weight: string;
 }
 
 export interface NoteDetails {
@@ -228,3 +232,19 @@ export interface NoteDetails {
   isEdit: boolean;
   editIndex: number;
 }
+
+export interface CreateDogSuccessResponse {
+  data: DogFormDetails;
+  message: string;
+}
+
+export interface CreateDogErrorResponse {
+  error: string;
+  details: string;
+}
+
+export const isCreateLogSuccess = (
+  res: CreateDogSuccessResponse | CreateDogErrorResponse
+): res is CreateDogSuccessResponse => {
+  return (res as CreateDogSuccessResponse).data.dogLogId != undefined;
+};
