@@ -4,6 +4,7 @@ import {
   SignUpRequest,
   SignUpSuccessResponse,
 } from "@/Interface/authInterface";
+
 import { http } from "@/util";
 
 export const signUp = async (

@@ -13,8 +13,6 @@ function LoginPage() {
 
   const toggleShowSignUp = () => setShowSignUp((prev) => !prev);
 
-  console.log(user);
-
   return user.uid ? (
     <UserInfo />
   ) : showSignUp ? (

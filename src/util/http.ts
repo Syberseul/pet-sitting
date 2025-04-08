@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { getToken } from "./token";
 
 const requestInstance = axios.create({
   baseURL: "http://localhost:3000",
@@ -7,6 +8,11 @@ const requestInstance = axios.create({
 
 requestInstance.interceptors.request.use(
   (config) => {
+    const token = getToken();
+
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    console.log(config);
+
     return config;
   },
   (err) => {

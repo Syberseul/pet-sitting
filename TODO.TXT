@@ -1,0 +1,3 @@
+SignUp match pwd and confirmPwd
+
+sync breedType and weight check mechanism ()
