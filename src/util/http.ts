@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { getToken } from "./token";
 
 const requestInstance = axios.create({
-  baseURL: "http://localhost:3000",
-  // baseURL: "https://backend-git-master-syberseuls-projects.vercel.app/",
+  // baseURL: "http://localhost:3000",
+  baseURL: "https://backend-pet-sitting-family.vercel.app/",
   timeout: 5000,
 });
 
