@@ -2,8 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { getToken } from "./token";
 
 const requestInstance = axios.create({
-  // baseURL: "http://localhost:3000",
-  baseURL: "https://backend-pet-sitting-family.vercel.app/",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 5000,
 });
 
