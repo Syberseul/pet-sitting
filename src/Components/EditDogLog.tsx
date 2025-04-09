@@ -30,13 +30,8 @@ import type { GetProps } from "antd";
 import {
   BreedInfo,
   DogFormDetails,
-  isCreateLogSuccess,
   NoteDetails,
 } from "@/Interface/dogInterface";
-
-import { createDogLog } from "@/APIs/dogApi";
-
-import { useNavigate } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
 

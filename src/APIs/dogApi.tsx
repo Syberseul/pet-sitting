@@ -10,7 +10,7 @@ export const createDogLog = async (
 ): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
   try {
     const response = await http.request({
-      url: "/createDogLog",
+      url: "dogs/createDogLog",
       method: "POST",
       data: dog,
     });
@@ -27,7 +27,7 @@ export const getDogLog = async (
 ): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
   try {
     const response = await http.request({
-      url: `/getDogLog/${id}`,
+      url: `dogs/getDogLog/${id}`,
       method: "GET",
     });
 
@@ -43,7 +43,7 @@ export const updateDogLog = async (
 ): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
   try {
     const response = await http.request({
-      url: `/updateDogLog/${dog.dogLogId}`,
+      url: `dogs/updateDogLog/${dog.dogLogId}`,
       method: "PUT",
       data: dog,
     });
@@ -53,4 +53,26 @@ export const updateDogLog = async (
     const apiError = error as CreateDogErrorResponse;
     return apiError;
   }
+};
+
+export const getAllDogLogs = async (): Promise<
+  DogFormDetails[] | CreateDogErrorResponse
+> => {
+  try {
+    const response = await http.request({
+      url: "dogs/getAllDogLogs",
+      method: "GET",
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as CreateDogErrorResponse;
+    return apiError;
+  }
+};
+
+export const isFetchDogDataSuccess = (
+  res: DogFormDetails[] | CreateDogErrorResponse
+): res is DogFormDetails[] => {
+  return (res as DogFormDetails[]).length >= 0;
 };

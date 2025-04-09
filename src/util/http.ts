@@ -46,7 +46,7 @@ requestInstance.interceptors.response.use(
 
       try {
         const response = await requestInstance.post<RefreshTokenResponse>(
-          "/refreshToken",
+          "users/refreshToken",
           {
             uid: userData.uid,
             token: userData.token,

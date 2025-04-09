@@ -12,7 +12,7 @@ export const signUp = async (
 ): Promise<SignUpSuccessResponse | SignUpErrorResponse> => {
   try {
     const response = await http.request<SignUpSuccessResponse>({
-      url: "/register",
+      url: "users/register",
       method: "POST",
       data: user,
     });
@@ -29,7 +29,7 @@ export const signIn = async (
 ): Promise<SignUpSuccessResponse | SignUpErrorResponse> => {
   try {
     const response = await http.request<SignUpSuccessResponse>({
-      url: "/login",
+      url: "users/login",
       method: "POST",
       data: user,
     });

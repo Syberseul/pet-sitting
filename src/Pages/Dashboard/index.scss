@@ -1,0 +1,7 @@
+.hoverItem {
+  cursor: pointer;
+  &:hover {
+    background-color: #3af;
+    border-radius: 5px;
+  }
+}

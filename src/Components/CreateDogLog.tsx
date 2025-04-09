@@ -94,10 +94,6 @@ const CreateDogLog: React.FC = () => {
     setOpen(false);
   };
 
-  const onFormLayoutChange = ({ size }: { size: SizeType }) => {
-    setComponentSize(size);
-  };
-
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return false;
     // Can not select days before today and today
