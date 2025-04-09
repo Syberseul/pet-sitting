@@ -5,3 +5,9 @@ export interface ApiError {
   code: number;
   details?: SignUpErrorResponse | any;
 }
+
+export interface RefreshTokenResponse {
+  token: string;
+  refreshToken: string;
+  uid: string;
+}

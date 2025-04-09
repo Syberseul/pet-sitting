@@ -17,6 +17,13 @@ export interface UserStoreData {
   role: number;
 }
 
+export interface UserRefreshTokenData {
+  uid: string;
+  email: string;
+  token: string;
+  refreshToken: string;
+}
+
 export interface UserSignUpFailedInfo {
   showSignUpFailed: boolean;
   errMsg: string;

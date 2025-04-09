@@ -233,7 +233,11 @@ const CreateDogLog: React.FC = () => {
     setNoteLists(modifiedList);
   };
 
-  const handleCloseAddNoteModal = () => setNoteDetails(initNoteDetails);
+  const handleCloseAddNoteModal = () => {
+    setNoteDetails(initNoteDetails);
+    setDogStatus(initialDogStatus);
+    setOpen(false);
+  };
 
   return (
     <>
@@ -248,6 +252,7 @@ const CreateDogLog: React.FC = () => {
             提交
           </Button>
         }
+        onCancel={handleCloseAddNoteModal}
       >
         <Form
           form={form}
@@ -255,7 +260,7 @@ const CreateDogLog: React.FC = () => {
           wrapperCol={{ span: 14 }}
           layout="horizontal"
           initialValues={{ size: componentSize }}
-          onValuesChange={onFormLayoutChange}
+          onValuesChange={({ size }) => setComponentSize(size)}
           size={componentSize as SizeType}
           style={{ maxWidth: 600 }}
           onFinish={onFinish}
@@ -318,7 +323,7 @@ const CreateDogLog: React.FC = () => {
               placeholder={["起始时间", "结束时间"]}
             />
           </Form.Item>
-          <Form.Item label="体重" name="weight">
+          <Form.Item label="体重">
             <div
               style={{
                 display: "flex",
@@ -326,14 +331,26 @@ const CreateDogLog: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <InputNumber min={Number(0)} onChange={handleAfterWeightChange} />
+              <Form.Item
+                name="weight"
+                noStyle
+                rules={[
+                  {
+                    type: "number",
+                    min: 0,
+                    message: "请输入有效的体重值",
+                  },
+                ]}
+              >
+                <InputNumber min={0} onChange={handleAfterWeightChange} />
+              </Form.Item>
               <span>Kg</span>
               {!dogStatus.isDogInWeightRange && (
                 <Alert
                   message={
                     dogStatus.isDogOverWeight ? "狗狗有些超重！" : "狗狗有些瘦"
                   }
-                  type="info"
+                  type="warning"
                   showIcon
                 />
               )}

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { UserStoreData } from "@/Interface/userInterface";
+import { UserRefreshTokenData, UserStoreData } from "@/Interface/userInterface";
 
 const initialUserDataState: UserStoreData = {
   uid: "",
@@ -30,13 +30,21 @@ const userStore = createSlice({
       Object.assign(state, initialUserDataState);
       localStorage.removeItem("userInfo");
     },
+    userRefreshToken(state, action: PayloadAction<UserRefreshTokenData>) {
+      (state.email = action.payload.email),
+        (state.token = action.payload.token),
+        (state.refreshToken = action.payload.refreshToken),
+        (state.uid = action.payload.uid);
+
+      localStorage.setItem("userInfo", JSON.stringify(state));
+    },
   },
 });
 
-const { userLogin, userLogout } = userStore.actions;
+const { userLogin, userLogout, userRefreshToken } = userStore.actions;
 
 const reducer = userStore.reducer;
 
-export { userLogin, userLogout };
+export { userLogin, userLogout, userRefreshToken };
 
 export default reducer;
