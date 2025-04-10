@@ -20,6 +20,7 @@ import {
   Popover,
   Typography,
   TreeSelect,
+  Skeleton,
 } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
@@ -30,6 +31,7 @@ import type { GetProps } from "antd";
 import {
   BreedInfo,
   DogFormDetails,
+  isCreateLogSuccess,
   NoteDetails,
 } from "@/Interface/dogInterface";
 
@@ -77,27 +79,28 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
   const [dateRange, setDateRange] = useState<[string, string] | null>();
   const [noteDetails, setNoteDetails] = useState<NoteDetails>(initNoteDetails);
   const [noteLists, setNoteLists] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   // 获取狗狗日志数据
   useEffect(() => {
     if (!uid || !visible) return;
 
-    const fetchDogDetails = async () => {
-      setLoading(true);
-      try {
-        const res = await getDogLog(uid);
-        handleDetails(res);
-      } catch (error) {
-        console.error("Failed to fetch dog log:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDogDetails();
   }, [uid, visible]);
+
+  const fetchDogDetails = async () => {
+    setIsFetching(true);
+    try {
+      const res = await getDogLog(uid);
+      handleDetails(res);
+    } catch (error) {
+      console.error("Failed to fetch dog log:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
   const handleDetails = async (res: any) => {
     form.resetFields();
@@ -135,9 +138,10 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
 
   const onFinish = async () => {
     try {
+      setIsSaving(true);
+
       const values = await form.validateFields();
-      // 这里调用更新API（暂时留空）
-      console.log("Submit values:", values);
+
       const formData: DogFormDetails = {
         ...values,
         startDate: dateRange![0],
@@ -150,8 +154,9 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
         dogLogId: uid,
       });
 
-      console.log(res);
-      onSuccess();
+      isCreateLogSuccess(res) && onSuccess();
+
+      setIsSaving(false);
     } catch (error) {
       console.error("Validation failed:", error);
     }
@@ -303,7 +308,7 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
       title="编辑寄养信息"
       open={visible}
       onCancel={onCancel}
-      confirmLoading={loading}
+      confirmLoading={isSaving}
       footer={[
         <Button key="back" onClick={onCancel}>
           取消
@@ -311,7 +316,7 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
         <Button
           key="submit"
           type="primary"
-          loading={loading}
+          loading={isSaving || isFetching}
           onClick={onFinish}
         >
           保存
@@ -319,152 +324,160 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
       ]}
       width={800}
     >
-      <Form
-        form={form}
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        initialValues={{ size: componentSize }}
-        onValuesChange={({ size }) => setComponentSize(size)}
-        size={componentSize as SizeType}
-        style={{ maxWidth: 600 }}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="犬种"
-          name="breedType"
-          rules={[{ required: true, message: "请选择犬种" }]}
+      {isFetching ? (
+        <Skeleton active />
+      ) : (
+        <Form
+          form={form}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 14 }}
+          layout="horizontal"
+          initialValues={{ size: componentSize }}
+          onValuesChange={({ size }) => setComponentSize(size)}
+          size={componentSize as SizeType}
+          style={{ maxWidth: 600 }}
+          autoComplete="off"
         >
-          <TreeSelect
-            showSearch
-            style={{ width: "100%" }}
-            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-            placeholder="选择犬种"
-            allowClear
-            treeDefaultExpandAll
-            onChange={onChange}
-            treeData={treeData}
-          />
-        </Form.Item>
-        {dogStatus.showImg && (
           <Form.Item
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-            label=" "
-            colon={false}
+            label="犬种"
+            name="breedType"
+            rules={[{ required: true, message: "请选择犬种" }]}
           >
-            <img
-              src={dogStatus.imgUrl}
-              alt={`${breed.name}`}
+            <TreeSelect
+              showSearch
+              style={{ width: "100%" }}
+              dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
+              placeholder="选择犬种"
+              allowClear
+              treeDefaultExpandAll
+              onChange={onChange}
+              treeData={treeData}
+            />
+          </Form.Item>
+          {dogStatus.showImg && (
+            <Form.Item
               style={{
-                maxWidth: "100%",
-                height: "auto",
-                maxHeight: "500px",
-                paddingTop: "10px",
+                display: "flex",
+                flexDirection: "column",
               }}
-            />
-            <Button onClick={getDogInfo}>看其他</Button>
-          </Form.Item>
-        )}
-        <Form.Item
-          label="狗狗名字"
-          name="dogName"
-          rules={[{ required: true, message: "请输入狗狗的名字!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="接送时间"
-          name="dateRange"
-          rules={[{ required: true, message: "请选择接送时间" }]}
-        >
-          <RangePicker
-            disabledDate={disabledDate}
-            onChange={handleDateRangeSelect}
-            placeholder={["起始时间", "结束时间"]}
-          />
-        </Form.Item>
-        <Form.Item label="体重">
-          <div
-            style={{ display: "flex", columnGap: "5px", alignItems: "center" }}
-          >
-            <Form.Item name="weight" noStyle>
-              <InputNumber min={0} onChange={handleAfterWeightChange} />
-            </Form.Item>
-            <span>Kg</span>
-            {!dogStatus.isDogInWeightRange && (
-              <Alert
-                message={
-                  dogStatus.isDogOverWeight ? "狗狗有些超重！" : "狗狗有些瘦"
-                }
-                type="warning"
-                showIcon
+              label=" "
+              colon={false}
+            >
+              <img
+                src={dogStatus.imgUrl}
+                alt={`${breed.name}`}
+                style={{
+                  maxWidth: "100%",
+                  height: "auto",
+                  maxHeight: "500px",
+                  paddingTop: "10px",
+                }}
               />
-            )}
-          </div>
-        </Form.Item>
-        <Form.Item label="价格/天">
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Form.Item name="dailyPrice" noStyle>
-              <InputNumber min={0} />
+              <Button onClick={getDogInfo}>看其他</Button>
             </Form.Item>
-            {breed.size && (
-              <Popover
-                title={breed.size}
-                content={`平均体重区间: ${breed.normalWeightRange.join(
-                  "Kg ~ "
-                )}Kg`}
-              >
-                <span style={{ marginLeft: 8 }}>({breed.size})</span>
-              </Popover>
-            )}
-          </div>
-        </Form.Item>
-        <Form.Item label="主人名字" name="ownerName">
-          <Input />
-        </Form.Item>
-        <Form.Item label="联系电话" name="contactNo">
-          <Input />
-        </Form.Item>
-
-        {/* 注意事项列表 */}
-        <Form.Item label="注意事项">
-          <Button
-            onClick={() =>
-              setNoteDetails({ ...initNoteDetails, showAddNoteModal: true })
-            }
+          )}
+          <Form.Item
+            label="狗狗名字"
+            name="dogName"
+            rules={[{ required: true, message: "请输入狗狗的名字!" }]}
           >
-            添加笔记
-          </Button>
-        </Form.Item>
-
-        {noteLists?.length > 0 && (
-          <Form.Item label=" " colon={false}>
-            <List
-              bordered
-              dataSource={noteLists}
-              renderItem={(item, index) => (
-                <List.Item
-                  actions={[
-                    <EditOutlined
-                      key="edit"
-                      onClick={() => handleEditNote(index)}
-                    />,
-                    <DeleteOutlined
-                      key="delete"
-                      onClick={() => handleRemoveNote(index)}
-                    />,
-                  ]}
-                >
-                  <Typography.Text mark>{index + 1}.</Typography.Text> {item}
-                </List.Item>
-              )}
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="接送时间"
+            name="dateRange"
+            rules={[{ required: true, message: "请选择接送时间" }]}
+          >
+            <RangePicker
+              disabledDate={disabledDate}
+              onChange={handleDateRangeSelect}
+              placeholder={["起始时间", "结束时间"]}
             />
           </Form.Item>
-        )}
-      </Form>
+          <Form.Item label="体重">
+            <div
+              style={{
+                display: "flex",
+                columnGap: "5px",
+                alignItems: "center",
+              }}
+            >
+              <Form.Item name="weight" noStyle>
+                <InputNumber min={0} onChange={handleAfterWeightChange} />
+              </Form.Item>
+              <span>Kg</span>
+              {!dogStatus.isDogInWeightRange && (
+                <Alert
+                  message={
+                    dogStatus.isDogOverWeight ? "狗狗有些超重！" : "狗狗有些瘦"
+                  }
+                  type="warning"
+                  showIcon
+                />
+              )}
+            </div>
+          </Form.Item>
+          <Form.Item label="价格/天">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Form.Item name="dailyPrice" noStyle>
+                <InputNumber min={0} />
+              </Form.Item>
+              {breed.size && (
+                <Popover
+                  title={breed.size}
+                  content={`平均体重区间: ${breed.normalWeightRange.join(
+                    "Kg ~ "
+                  )}Kg`}
+                >
+                  <span style={{ marginLeft: 8 }}>({breed.size})</span>
+                </Popover>
+              )}
+            </div>
+          </Form.Item>
+          <Form.Item label="主人名字" name="ownerName">
+            <Input />
+          </Form.Item>
+          <Form.Item label="联系电话" name="contactNo">
+            <Input />
+          </Form.Item>
+
+          {/* 注意事项列表 */}
+          <Form.Item label="注意事项">
+            <Button
+              onClick={() =>
+                setNoteDetails({ ...initNoteDetails, showAddNoteModal: true })
+              }
+            >
+              添加笔记
+            </Button>
+          </Form.Item>
+
+          {noteLists?.length > 0 && (
+            <Form.Item label=" " colon={false}>
+              <List
+                bordered
+                dataSource={noteLists}
+                renderItem={(item, index) => (
+                  <List.Item
+                    actions={[
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => handleEditNote(index)}
+                      />,
+                      <DeleteOutlined
+                        key="delete"
+                        onClick={() => handleRemoveNote(index)}
+                      />,
+                    ]}
+                  >
+                    <Typography.Text mark>{index + 1}.</Typography.Text> {item}
+                  </List.Item>
+                )}
+              />
+            </Form.Item>
+          )}
+        </Form>
+      )}
 
       {/* 添加笔记模态框 */}
       <Modal
