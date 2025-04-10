@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import SingUp from "./SingUp";
+import SignUp from "./SignUp";
 import Login from "./Login";
 
 import { useUserState } from "@/util/customHooks";
@@ -16,7 +16,7 @@ function LoginPage() {
   return user.uid ? (
     <UserInfo />
   ) : showSignUp ? (
-    <SingUp toggleShowSignUp={toggleShowSignUp} />
+    <SignUp toggleShowSignUp={toggleShowSignUp} />
   ) : (
     <Login toggleShowSignUp={toggleShowSignUp} />
   );

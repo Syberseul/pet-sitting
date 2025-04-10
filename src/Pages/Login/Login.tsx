@@ -21,6 +21,8 @@ function Login(props: Props) {
     errMsg: "",
   });
 
+  const [isLogingIn, setIsLogingIn] = useState<boolean>(false);
+
   const [form] = Form.useForm();
 
   const [clientReady, setClientReady] = useState<boolean>(false);
@@ -32,6 +34,8 @@ function Login(props: Props) {
   const onFinish = async (values: any) => {
     const { user } = values;
 
+    setIsLogingIn(true);
+
     const res = await signIn(user);
 
     if (isSignUpSuccess(res)) {
@@ -42,6 +46,8 @@ function Login(props: Props) {
         showSignUpFailed: true,
         errMsg: res.error ? res.error : "error",
       });
+
+    setIsLogingIn(false);
   };
 
   return (
@@ -53,7 +59,7 @@ function Login(props: Props) {
     >
       <Form.Item
         name={["user", "email"]}
-        label="Email"
+        label="邮箱"
         rules={[{ type: "email", required: true }]}
       >
         <Input type="email" />
@@ -61,7 +67,7 @@ function Login(props: Props) {
 
       <Form.Item
         name={["user", "password"]}
-        label="Password"
+        label="密码"
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -78,11 +84,12 @@ function Login(props: Props) {
               !!form.getFieldsError().filter(({ errors }) => errors.length)
                 .length
             }
+            loading={isLogingIn}
           >
-            Login
+            登录
           </Button>
           <p>
-            or{" "}
+            或者{" "}
             <span
               style={{
                 textDecoration: "underline",
@@ -91,7 +98,7 @@ function Login(props: Props) {
               }}
               onClick={toggleShowSignUp}
             >
-              Sign up with new Email
+              创建新用户
             </span>
           </p>
         </>

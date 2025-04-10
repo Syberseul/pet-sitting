@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { getToken } from "./token";
 import { SignUpErrorResponse } from "@/Interface/authInterface";
-import { userRefreshToken } from "@/store/modules/userStore";
+import { userLogout, userRefreshToken } from "@/store/modules/userStore";
 import { RefreshTokenResponse } from "@/Interface/apiInterface";
 import store from "@/store";
 
@@ -70,6 +70,7 @@ requestInstance.interceptors.response.use(
         }
       } catch (error) {
         const apiError = error as SignUpErrorResponse;
+        dispatch(userLogout());
         return apiError;
       }
     }

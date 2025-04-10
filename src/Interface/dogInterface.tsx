@@ -1,3 +1,5 @@
+import { DailyEventType } from "./dashboardInterface";
+
 export interface BreedInfo {
   name: string;
   normalWeightRange: [number, number];
@@ -210,7 +212,7 @@ export interface DogFormDetails {
   dogName: string;
   startDate: string;
   endDate: string;
-  weight?: string;
+  weight?: string | number;
   dailyPrice?: number;
   ownerName?: string;
   contactNo?: string;
@@ -248,3 +250,10 @@ export const isCreateLogSuccess = (
 ): res is CreateDogSuccessResponse => {
   return (res as CreateDogSuccessResponse).data.dogLogId != undefined;
 };
+
+export interface DailyCalendarDogDetail {
+  dogName: string;
+  dogLogId: string;
+  breedType: string;
+  iconType: DailyEventType;
+}

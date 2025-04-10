@@ -21,7 +21,7 @@ const App: React.FC = () => {
       ? [
           {
             key: "/dashboard",
-            label: "Dashboard",
+            label: "总览",
           },
         ]
       : []),

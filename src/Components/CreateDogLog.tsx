@@ -34,8 +34,6 @@ import {
 
 import { createDogLog } from "@/APIs/dogApi";
 
-import { useNavigate } from "react-router-dom";
-
 const { RangePicker } = DatePicker;
 
 type SizeType = Parameters<typeof Form>[0]["size"];
@@ -56,7 +54,11 @@ const initNoteDetails: NoteDetails = {
   editIndex: 0,
 };
 
-const CreateDogLog: React.FC = () => {
+interface CreateDogLogModalProps {
+  afterCreate: () => void;
+}
+
+const CreateDogLog: React.FC<CreateDogLogModalProps> = ({ afterCreate }) => {
   const [open, setOpen] = React.useState<boolean>(false);
 
   const [breed, setBreed] = useState<BreedInfo>({
@@ -71,12 +73,13 @@ const CreateDogLog: React.FC = () => {
   const [noteDetails, setNoteDetails] = useState<NoteDetails>(initNoteDetails);
   const [noteLists, setNoteLists] = useState<string[]>([]);
   const [form] = Form.useForm();
-
-  const navigate = useNavigate();
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const treeData = transformBreedMapToTree();
 
   const onFinish = async () => {
+    setIsCreating(true);
+
     const formValues = form.getFieldsValue();
     const formData: DogFormDetails = {
       ...formValues,
@@ -87,9 +90,9 @@ const CreateDogLog: React.FC = () => {
     };
     const res = await createDogLog(formData);
 
-    if (isCreateLogSuccess(res)) {
-      navigate(`/details/${res.data.dogLogId}`);
-    } else console.log(res.error);
+    setIsCreating(false);
+
+    if (isCreateLogSuccess(res)) afterCreate();
 
     setOpen(false);
   };
@@ -159,21 +162,10 @@ const CreateDogLog: React.FC = () => {
   };
 
   const handleDateRangeSelect: RangePickerProps["onChange"] = (
-    dates,
+    _dates,
     dateStrings
   ) => {
-    console.log("dates: ", dates);
     setDateRange(dateStrings);
-
-    // from dates => dateStrings
-    // const formateedDates =
-    //   dates?.map((date) => date?.format("YYYY-MM-DD")) || [];
-
-    // from dateStrings => dates
-    // const dateRangeStrings = [
-    //   dateStrings[0] ? dayjs(dateStrings[0]) : null,
-    //   dateStrings[1] ? dayjs(dateStrings[1]) : null,
-    // ];
   };
 
   const handleAfterWeightChange = (val: number | null) => {
@@ -244,7 +236,7 @@ const CreateDogLog: React.FC = () => {
         title={<p>寄养信息</p>}
         open={open}
         footer={
-          <Button type="primary" onClick={onFinish}>
+          <Button type="primary" onClick={onFinish} loading={isCreating}>
             提交
           </Button>
         }

@@ -20,6 +20,7 @@ function SingUp(props: Props) {
     showSignUpFailed: false,
     errMsg: "",
   });
+  const [isSigningUp, setIsSigningUp] = useState<boolean>(false);
 
   const [form] = Form.useForm();
 
@@ -32,6 +33,8 @@ function SingUp(props: Props) {
   const onFinish = async (values: any) => {
     const { user } = values;
 
+    setIsSigningUp(true);
+
     const res = await signUp(user);
 
     if (isSignUpSuccess(res)) {
@@ -42,6 +45,8 @@ function SingUp(props: Props) {
         showSignUpFailed: true,
         errMsg: res.error ? res.error : "error",
       });
+
+    setIsSigningUp(false);
   };
 
   return (
@@ -51,13 +56,13 @@ function SingUp(props: Props) {
       style={{ maxWidth: 600 }}
       validateMessages={validateMessages}
     >
-      <Form.Item name={["user", "username"]} label="Name">
+      <Form.Item name={["user", "username"]} label="用户名">
         <Input />
       </Form.Item>
 
       <Form.Item
         name={["user", "email"]}
-        label="Email"
+        label="邮箱"
         rules={[{ type: "email", required: true }]}
       >
         <Input type="email" />
@@ -65,7 +70,7 @@ function SingUp(props: Props) {
 
       <Form.Item
         name={["user", "password"]}
-        label="Password"
+        label="密码"
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -73,7 +78,7 @@ function SingUp(props: Props) {
 
       <Form.Item
         name={["user", "confirmPassword"]}
-        label="Confirm Password"
+        label="确认密码"
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -90,11 +95,12 @@ function SingUp(props: Props) {
               !!form.getFieldsError().filter(({ errors }) => errors.length)
                 .length
             }
+            loading={isSigningUp}
           >
-            Submit
+            创建
           </Button>
           <p>
-            or{" "}
+            或者{" "}
             <span
               style={{
                 textDecoration: "underline",
@@ -103,7 +109,7 @@ function SingUp(props: Props) {
               }}
               onClick={toggleShowSignUp}
             >
-              Login with existing email
+              通过邮箱登录
             </span>
           </p>
         </>
