@@ -1,14 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { UserRefreshTokenData, UserStoreData } from "@/Interface/userInterface";
+import { UserRole } from "@/enums";
 
 const initialUserDataState: UserStoreData = {
   uid: "",
   email: "",
-  username: "",
+  userName: "",
   token: "",
   refreshToken: "",
-  role: 11,
+  role: UserRole.VISITOR,
 };
 
 const userStore = createSlice({
@@ -17,7 +18,7 @@ const userStore = createSlice({
   reducers: {
     userLogin(state, action: PayloadAction<UserStoreData>) {
       state.email = action.payload.email;
-      state.username = action.payload.username;
+      state.userName = action.payload.userName;
       state.token = action.payload.token;
       state.refreshToken = action.payload.refreshToken;
       state.role = action.payload.role;

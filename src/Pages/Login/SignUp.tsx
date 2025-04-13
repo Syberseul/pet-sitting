@@ -56,7 +56,7 @@ function SingUp(props: Props) {
       style={{ maxWidth: 600 }}
       validateMessages={validateMessages}
     >
-      <Form.Item name={["user", "username"]} label="用户名">
+      <Form.Item name={["user", "userName"]} label="用户名">
         <Input />
       </Form.Item>
 

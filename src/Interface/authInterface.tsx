@@ -1,21 +1,22 @@
 export interface SignUpRequest {
-  username: string;
+  userName: string;
   password: string;
   email: string;
 }
 
 export interface SignUpSuccessResponse {
   uid: string;
-  username: string;
+  userName: string;
   email: string;
   token: string;
   refreshToken: string;
   role: number;
-  error: string;
+  customToken: string;
 }
 
 export interface SignUpErrorResponse {
   error: string;
+  code: number;
 }
 
 export const isSignUpSuccess = (

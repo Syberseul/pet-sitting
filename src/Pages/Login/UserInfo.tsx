@@ -16,7 +16,7 @@ function UserInfo() {
 
   return (
     <>
-      <div>User name: {user.username}</div>
+      <div>User name: {user.userName}</div>
       <div>Email: {user.email}</div>
       <span
         style={{

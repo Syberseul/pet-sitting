@@ -28,6 +28,7 @@ import {
 import "./index.scss";
 
 import ViewDogLogsList from "@/Components/ViewDogLogsList";
+import CreateDogOwner from "@/Components/CreateDogOwner";
 
 dayjs.locale("zh-cn");
 
@@ -291,6 +292,7 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <CreateDogLog afterCreate={refreshLog} />
+      <CreateDogOwner afterCreate={() => {}} />
 
       <ConfigProvider locale={zhCN}>
         <Calendar cellRender={cellRender} />;

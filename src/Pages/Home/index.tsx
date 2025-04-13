@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Layout, Menu, Avatar, Space } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { UserOutlined } from "@ant-design/icons";
+import { TranslationOutlined, UserOutlined } from "@ant-design/icons";
 
 import type { MenuInfo } from "rc-menu/lib/interface";
 
@@ -61,6 +61,9 @@ const App: React.FC = () => {
           items={navItem}
           style={{ flex: 1, minWidth: 0 }}
           onClick={handleClickMenu}
+        />
+        <TranslationOutlined
+          style={{ color: "#fff", cursor: "pointer", fontSize: "20px" }}
         />
       </Header>
       <Content style={{ padding: "0 48px", flex: 1, overflow: "auto" }}>

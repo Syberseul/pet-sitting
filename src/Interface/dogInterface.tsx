@@ -257,3 +257,12 @@ export interface DailyCalendarDogDetail {
   breedType: string;
   iconType: DailyEventType;
 }
+
+export interface DogInfo {
+  breedType: string;
+  dogName: string;
+  ownerId: string;
+  weight: number;
+  alive: boolean;
+  uid?: string;
+}

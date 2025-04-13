@@ -16,6 +16,8 @@ requestInstance.interceptors.request.use(
 
     if (token) config.headers.Authorization = `Bearer ${token}`;
 
+    config.headers.Platform = "WEB";
+
     return config;
   },
   (err) => {

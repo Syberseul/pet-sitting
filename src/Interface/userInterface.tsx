@@ -1,3 +1,5 @@
+import { UserRole } from "@/enums";
+
 export interface Props {
   toggleShowSignUp: () => void;
 }
@@ -8,13 +10,31 @@ export interface UserData {
   email: string;
 }
 
+export interface UserSignUpFailedInfo {
+  showSignUpFailed: boolean;
+  errMsg: string;
+}
+
+export interface User {
+  uid?: string;
+  email: string;
+  userName: string;
+  role: number;
+  token: string;
+  refreshToken: string;
+  isFromWx: boolean;
+  wxId: string;
+  googleId: string;
+  githubId: string;
+}
+
 export interface UserStoreData {
   uid: string;
   email: string;
-  username: string;
+  userName: string;
   token: string;
   refreshToken: string;
-  role: number;
+  role: UserRole;
 }
 
 export interface UserRefreshTokenData {
@@ -22,9 +42,4 @@ export interface UserRefreshTokenData {
   email: string;
   token: string;
   refreshToken: string;
-}
-
-export interface UserSignUpFailedInfo {
-  showSignUpFailed: boolean;
-  errMsg: string;
 }
