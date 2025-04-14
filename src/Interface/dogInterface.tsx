@@ -258,11 +258,23 @@ export interface DailyCalendarDogDetail {
   iconType: DailyEventType;
 }
 
-export interface DogInfo {
+export interface DogInfoCreate {
   breedType: string;
+  breedName: string;
   dogName: string;
-  ownerId: string;
   weight: number;
   alive: boolean;
+  ownerId?: string;
   uid?: string;
+}
+
+export interface DogInfo extends DogInfoCreate {
+  ownerId: string;
+  uid: string;
+}
+
+export interface DogListInfo {
+  dog: DogInfoCreate,
+  key: string,
+  label: string
 }
