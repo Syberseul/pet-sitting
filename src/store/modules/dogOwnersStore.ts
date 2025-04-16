@@ -7,7 +7,7 @@ const dogOwnersStore = createSlice({
   name: "dogowners",
   initialState: initialDogOwnerState,
   reducers: {
-    setDogOwners(state, action: PayloadAction<DogOwner[]>) {
+    setDogOwners(_state, action: PayloadAction<DogOwner[]>) {
       return action.payload;
     },
     modifyDogOwner(state, action: PayloadAction<DogOwner>) {
