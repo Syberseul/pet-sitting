@@ -32,10 +32,10 @@ const userStore = createSlice({
       localStorage.removeItem("userInfo");
     },
     userRefreshToken(state, action: PayloadAction<UserRefreshTokenData>) {
-      (state.email = action.payload.email),
-        (state.token = action.payload.token),
-        (state.refreshToken = action.payload.refreshToken),
-        (state.uid = action.payload.uid);
+      state.email = action.payload.email;
+      state.token = action.payload.token;
+      state.refreshToken = action.payload.refreshToken;
+      state.uid = action.payload.uid;
 
       localStorage.setItem("userInfo", JSON.stringify(state));
     },

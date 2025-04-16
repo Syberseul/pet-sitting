@@ -4,12 +4,16 @@ import ModifyDogSection from "./ModifyDogSection";
 import { Display } from "@/enums";
 import { DogInfoCreate, DogListInfo } from "@/Interface/dogInterface";
 
-import type { FormInstance } from 'antd';
-import { DogOwner, isCreateDogOwnerSuccess } from "@/Interface/dogOwnerInterface";
+import type { FormInstance } from "antd";
+import {
+  CreateDogOwnerSuccessResponse,
+  DogOwner,
+  isCreateDogOwnerSuccess,
+} from "@/Interface/dogOwnerInterface";
 import { createDogOwner } from "@/APIs/dogOwnerApi";
 
 interface Props {
-  afterCreate: () => void;
+  afterCreate: (ownerInfo: DogOwner) => void;
 }
 
 interface SubmitButtonProps {
@@ -19,7 +23,13 @@ interface SubmitButtonProps {
   isLoading: boolean;
 }
 
-const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({ form, children, onSave, dogList, isLoading}) => {
+const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({
+  form,
+  children,
+  onSave,
+  dogList,
+  isLoading,
+}) => {
   const [submittable, setSubmittable] = React.useState<boolean>(false);
 
   // Watch all values
@@ -28,12 +38,18 @@ const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({ fo
   useEffect(() => {
     form
       .validateFields({ validateOnly: true })
-      .then(() => setSubmittable(dogList.length > 0)) 
+      .then(() => setSubmittable(dogList.length > 0))
       .catch(() => setSubmittable(false));
   }, [form, values, dogList]);
 
   return (
-    <Button type="primary" htmlType="submit" disabled={!submittable} onClick={onSave} loading={isLoading}>
+    <Button
+      type="primary"
+      htmlType="submit"
+      disabled={!submittable}
+      onClick={onSave}
+      loading={isLoading}
+    >
       {children}
     </Button>
   );
@@ -41,11 +57,10 @@ const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({ fo
 
 const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [_dogs, setDogs] = useState<DogInfoCreate[]>([])
+  const [_dogs, setDogs] = useState<DogInfoCreate[]>([]);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [modalKey, setModalKey] = useState(0);
-  const [dogList, setDogList] = useState<DogListInfo[]>([])
-
+  const [dogList, setDogList] = useState<DogListInfo[]>([]);
 
   const [form] = Form.useForm();
 
@@ -53,29 +68,59 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
     try {
       await form.validateFields();
 
-      //   setIsCreating(true);
-
       const formValues = form.getFieldsValue();
-      
-      const addedDogs: DogInfoCreate[] = dogList.map((dog) => (dog.dog));
+
+      const addedDogs: DogInfoCreate[] = dogList.map((dog) => dog.dog);
       setDogs(addedDogs);
 
       const dogOwnerData: DogOwner = {
         name: formValues.userName,
         dogs: addedDogs,
         isFromWx: false,
-        contactNo: formValues.contactNo ?? ""
-      }
+        contactNo: formValues.contactNo ?? "",
+      };
 
-      setIsCreating(true);
+      // setIsCreating(true);
 
-      const res = await createDogOwner(dogOwnerData);
+      // const res = await createDogOwner(dogOwnerData);
 
-      setIsCreating(false);
+      // setIsCreating(false);
 
-      if (isCreateDogOwnerSuccess(res)) afterCreate();
-      
-      closeModal()
+      // if (isCreateDogOwnerSuccess(res)) {
+      //   const { data } = res as CreateDogOwnerSuccessResponse;
+      //   afterCreate(data);
+      // }
+
+      afterCreate({
+        userId: "",
+        name: "6666",
+        dogs: [
+          {
+            uid: "f8790039-79f2-40d9-bd37-8d01cddeba20",
+            breedType: "艾尔谷梗",
+            dogName: "1234",
+            ownerId: "ZhNidyzQTlMOq3nGy9MG",
+            weight: 0,
+            alive: true,
+            breedName: "airedale",
+          },
+          {
+            uid: "3f281db7-2e49-41a1-ad86-b61554dd053b",
+            breedType: "阿彭策尔山犬",
+            dogName: "2345",
+            ownerId: "ZhNidyzQTlMOq3nGy9MG",
+            weight: 20,
+            alive: true,
+            breedName: "appenzeller",
+          },
+        ],
+        contactNo: "",
+        isFromWx: false,
+        wxId: "",
+        uid: "ZhNidyzQTlMOq3nGy9MG",
+      });
+
+      closeModal();
     } catch (error) {
       //   console.log(error);
     }
@@ -86,14 +131,14 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
     setDogList([]);
     form.setFieldsValue({
       userName: "",
-      contactNo: ""
-    })
-    setModalKey(prev => prev + 1);
+      contactNo: "",
+    });
+    setModalKey((prev) => prev + 1);
   };
 
   const handleSaveDogs = (dogs: DogListInfo[]) => {
     setDogList(dogs);
-  }
+  };
 
   return (
     <>
@@ -105,7 +150,14 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
         title={<p>主人信息：</p>}
         open={openModal}
         footer={
-          <SubmitButton form={form} onSave={onFinish} dogList={dogList} isLoading={isCreating}>提交</SubmitButton>
+          <SubmitButton
+            form={form}
+            onSave={onFinish}
+            dogList={dogList}
+            isLoading={isCreating}
+          >
+            提交
+          </SubmitButton>
         }
         onCancel={closeModal}
       >

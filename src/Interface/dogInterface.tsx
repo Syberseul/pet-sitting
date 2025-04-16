@@ -5,6 +5,7 @@ export interface BreedInfo {
   normalWeightRange: [number, number];
   searchName?: string;
   size?: DogSize;
+  price?: number;
 }
 
 export enum DogSize {
@@ -225,7 +226,10 @@ export interface DogTourList {
   startDate: string;
   endDate: string;
   dailyPrice: number;
-  weight: string;
+  weight: number;
+  notes: string[];
+  checked?: boolean;
+  [key: string]: any;
 }
 
 export interface NoteDetails {
@@ -274,7 +278,7 @@ export interface DogInfo extends DogInfoCreate {
 }
 
 export interface DogListInfo {
-  dog: DogInfoCreate,
-  key: string,
-  label: string
+  dog: DogInfoCreate;
+  key: string;
+  label: string;
 }

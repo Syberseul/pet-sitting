@@ -9,7 +9,7 @@ import {
 
 import type { CalendarProps } from "antd";
 
-import { Calendar, ConfigProvider, Spin } from "antd";
+import { Button, Calendar, ConfigProvider, Modal, Spin } from "antd";
 
 import type { Dayjs } from "dayjs";
 
@@ -29,14 +29,34 @@ import "./index.scss";
 
 import ViewDogLogsList from "@/Components/ViewDogLogsList";
 import CreateDogOwner from "@/Components/CreateDogOwner";
+import {
+  DogOwner,
+  getDogOwnersSuccess,
+  isGetDogOwnerSuccess,
+} from "@/Interface/dogOwnerInterface";
+import CreateDogTour from "@/Components/CreateDogTour";
+import { useDispatch } from "react-redux";
+import { modifyDogOwner, setDogOwners } from "@/store/modules/dogOwnersStore";
+import { getDogOwners } from "@/APIs/dogOwnerApi";
 
 dayjs.locale("zh-cn");
 
+const initDogOwnerInfo: DogOwner = { name: "", dogs: [], isFromWx: false };
+
 const Dashboard: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [dogLogs, setDogLogs] = useState<DogFormDetails[]>([]);
 
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const [refreshFlag, setRefreshFlag] = useState<number>(0);
+
+  const [dogOwnerInfo, setDogOwnerInfo] = useState<DogOwner>(initDogOwnerInfo);
+  const [openPopUp, setOpenPopUp] = useState<boolean>(false);
+  const [openCreateTourModal, setOpenCreateTourModal] =
+    useState<boolean>(false);
+
+  const [isLoadingDogOwners, setIsLoadingDogOwners] = useState<boolean>(false);
 
   useEffect(() => {
     fetchAllData();
@@ -44,12 +64,22 @@ const Dashboard: React.FC = () => {
 
   const fetchAllData = async () => {
     setIsLoadingData(true);
+    setIsLoadingDogOwners(true);
 
     const res = await getAllDogLogs();
+    const dogOwners = await getDogOwners();
 
     if (isFetchDogDataSuccess(res)) setDogLogs(res);
 
+    console.log(isGetDogOwnerSuccess(dogOwners));
+
+    if (isGetDogOwnerSuccess(dogOwners)) {
+      const { data } = dogOwners as getDogOwnersSuccess;
+      dispatch(setDogOwners(data));
+    }
+
     setIsLoadingData(false);
+    setIsLoadingDogOwners(false);
   };
 
   const dateCellRender = (value: Dayjs) => {
@@ -289,14 +319,64 @@ const Dashboard: React.FC = () => {
     setRefreshFlag((prev) => prev + 1);
   };
 
+  const handleCreateDogOwner = (ownerInfo: DogOwner) => {
+    setOpenPopUp(true);
+    setDogOwnerInfo(ownerInfo);
+    dispatch(modifyDogOwner(ownerInfo));
+  };
+
+  const closePopUp = () => {
+    setOpenPopUp(false);
+    setDogOwnerInfo(initDogOwnerInfo);
+  };
+
+  const handleOpenCreateTourModal = () => {
+    setOpenCreateTourModal(true);
+    setOpenPopUp(false);
+  };
+
+  const handleCreateTour = () => {
+    closeCreateTourModal();
+  };
+
+  const closeCreateTourModal = () => {
+    setDogOwnerInfo(initDogOwnerInfo);
+    setOpenCreateTourModal(false);
+    setOpenPopUp(false);
+  };
+
   return (
     <>
       <CreateDogLog afterCreate={refreshLog} />
-      <CreateDogOwner afterCreate={() => {}} />
+      <CreateDogOwner afterCreate={handleCreateDogOwner} />
+      <Button type="primary" onClick={handleOpenCreateTourModal}>
+        添加寄养
+      </Button>
 
       <ConfigProvider locale={zhCN}>
-        <Calendar cellRender={cellRender} />;
+        <Calendar cellRender={cellRender} />
       </ConfigProvider>
+
+      <Modal
+        title={<p>提示:</p>}
+        footer={
+          <>
+            <Button onClick={() => closePopUp()}>再等等</Button>
+            <Button onClick={() => handleOpenCreateTourModal()}>创建</Button>
+          </>
+        }
+        onCancel={closePopUp}
+        open={openPopUp}
+      >
+        您要现在为狗狗主人创建寄养吗？
+      </Modal>
+
+      <CreateDogTour
+        isModalOpen={openCreateTourModal}
+        ownerInfo={dogOwnerInfo}
+        afterCreate={handleCreateTour}
+        handleClose={closeCreateTourModal}
+      />
     </>
   );
 };

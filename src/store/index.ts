@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import userReducer from "./modules/userStore";
+import dogOwnerStore from "./modules/dogOwnersStore";
 
 const loadPreloadedState = () => {
   try {
@@ -14,6 +15,7 @@ const loadPreloadedState = () => {
 const store = configureStore({
   reducer: {
     user: userReducer,
+    dogOwners: dogOwnerStore,
   },
   preloadedState: loadPreloadedState(),
 });

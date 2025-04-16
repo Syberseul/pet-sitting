@@ -19,6 +19,23 @@ export interface CreateDogOwnerErrorResponse {
   details: string;
 }
 
-export const isCreateDogOwnerSuccess = (res: CreateDogOwnerSuccessResponse | CreateDogOwnerErrorResponse) => {
+export const isCreateDogOwnerSuccess = (
+  res: CreateDogOwnerSuccessResponse | CreateDogOwnerErrorResponse
+) => {
   return (res as CreateDogOwnerSuccessResponse).data !== undefined;
+};
+
+export interface getDogOwnersSuccess {
+  data: DogOwner[];
 }
+
+export interface getDogOwnersFail {
+  error: string;
+  details: string;
+}
+
+export const isGetDogOwnerSuccess = (
+  res: getDogOwnersSuccess | getDogOwnersFail
+) => {
+  return !(res as getDogOwnersFail).error;
+};
