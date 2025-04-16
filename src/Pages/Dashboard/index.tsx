@@ -71,8 +71,6 @@ const Dashboard: React.FC = () => {
 
     if (isFetchDogDataSuccess(res)) setDogLogs(res);
 
-    console.log(isGetDogOwnerSuccess(dogOwners));
-
     if (isGetDogOwnerSuccess(dogOwners)) {
       const { data } = dogOwners as getDogOwnersSuccess;
       dispatch(setDogOwners(data));
@@ -349,7 +347,11 @@ const Dashboard: React.FC = () => {
     <>
       <CreateDogLog afterCreate={refreshLog} />
       <CreateDogOwner afterCreate={handleCreateDogOwner} />
-      <Button type="primary" onClick={handleOpenCreateTourModal}>
+      <Button
+        type="primary"
+        onClick={handleOpenCreateTourModal}
+        loading={isLoadingDogOwners}
+      >
         添加寄养
       </Button>
 

@@ -8,7 +8,6 @@ const dogOwnersStore = createSlice({
   initialState: initialDogOwnerState,
   reducers: {
     setDogOwners(state, action: PayloadAction<DogOwner[]>) {
-      console.log(action.payload);
       return action.payload;
     },
     modifyDogOwner(state, action: PayloadAction<DogOwner>) {
