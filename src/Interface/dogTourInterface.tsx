@@ -11,4 +11,21 @@ export interface NewDogTourInfo {
   notes: string[];
   dailyPrice: number;
   weight: number;
+  checked: boolean;
+  [key: string]: any;
 }
+
+export interface CreateTourSuccess {
+  data: DogTourInfo;
+}
+
+export interface CreateTourFail {
+  error: string;
+  details: string;
+}
+
+export const isCreateTourSuccess = (
+  res: CreateTourSuccess | CreateTourFail
+) => {
+  return (res as CreateTourSuccess).data.uid != undefined;
+};

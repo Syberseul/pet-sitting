@@ -228,7 +228,7 @@ export interface DogTourList {
   dailyPrice: number;
   weight: number;
   notes: string[];
-  checked?: boolean;
+  checked: boolean;
   [key: string]: any;
 }
 

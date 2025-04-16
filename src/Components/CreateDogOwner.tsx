@@ -11,6 +11,8 @@ import {
   isCreateDogOwnerSuccess,
 } from "@/Interface/dogOwnerInterface";
 import { createDogOwner } from "@/APIs/dogOwnerApi";
+import { useDispatch } from "react-redux";
+import { modifyDogOwner } from "@/store/modules/dogOwnersStore";
 
 interface Props {
   afterCreate: (ownerInfo: DogOwner) => void;
@@ -64,6 +66,8 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
 
   const [form] = Form.useForm();
 
+  const dispatch = useDispatch();
+
   const onFinish = async () => {
     try {
       await form.validateFields();
@@ -80,45 +84,18 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
         contactNo: formValues.contactNo ?? "",
       };
 
-      // setIsCreating(true);
+      setIsCreating(true);
 
-      // const res = await createDogOwner(dogOwnerData);
+      const res = await createDogOwner(dogOwnerData);
 
-      // setIsCreating(false);
+      setIsCreating(false);
 
-      // if (isCreateDogOwnerSuccess(res)) {
-      //   const { data } = res as CreateDogOwnerSuccessResponse;
-      //   afterCreate(data);
-      // }
+      if (isCreateDogOwnerSuccess(res)) {
+        const { data } = res as CreateDogOwnerSuccessResponse;
+        afterCreate(data);
 
-      afterCreate({
-        userId: "",
-        name: "6666",
-        dogs: [
-          {
-            uid: "f8790039-79f2-40d9-bd37-8d01cddeba20",
-            breedType: "艾尔谷梗",
-            dogName: "1234",
-            ownerId: "ZhNidyzQTlMOq3nGy9MG",
-            weight: 0,
-            alive: true,
-            breedName: "airedale",
-          },
-          {
-            uid: "3f281db7-2e49-41a1-ad86-b61554dd053b",
-            breedType: "阿彭策尔山犬",
-            dogName: "2345",
-            ownerId: "ZhNidyzQTlMOq3nGy9MG",
-            weight: 20,
-            alive: true,
-            breedName: "appenzeller",
-          },
-        ],
-        contactNo: "",
-        isFromWx: false,
-        wxId: "",
-        uid: "ZhNidyzQTlMOq3nGy9MG",
-      });
+        dispatch(modifyDogOwner(data));
+      }
 
       closeModal();
     } catch (error) {

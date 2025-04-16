@@ -49,7 +49,6 @@ const DogTourDetails: React.FC<Props> = ({
 
   useEffect(() => {
     const info = getBreedInfo(dogInfo.breedType);
-    console.log(info);
     setBreedInfo(info as BreedInfo);
     setDogTour({
       startDate: dogTour.startDate,
@@ -73,18 +72,7 @@ const DogTourDetails: React.FC<Props> = ({
   }, [dateRange]);
 
   useEffect(() => {
-    console.log(dogTour);
-    if (onDogTourChange)
-      onDogTourChange({
-        dogId: dogInfo.uid,
-        dogName: dogInfo.dogName,
-        ownerId: dogInfo.ownerId,
-        startDate: dogTour.startDate ?? "",
-        endDate: dogTour.endDate ?? "",
-        notes: dogTour.notes,
-        dailyPrice: dogTour.dailyPrice,
-        weight: dogInfo.weight,
-      });
+    syncTourDetails();
   }, [dogTour]);
 
   const handleDateRangeSelect: RangePickerProps["onChange"] = (
@@ -96,6 +84,7 @@ const DogTourDetails: React.FC<Props> = ({
       startDate: dateStrings[0],
       endDate: dateStrings[1],
     });
+    syncTourDetails();
   };
 
   const handleDailyPriceChange = (price: number | null) => {
@@ -103,6 +92,7 @@ const DogTourDetails: React.FC<Props> = ({
       ...dogTour,
       dailyPrice: price ?? 0,
     });
+    syncTourDetails();
   };
 
   const handleChangeNote = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,6 +106,7 @@ const DogTourDetails: React.FC<Props> = ({
       notes: [...prev.notes, note],
     }));
     setNote("");
+    syncTourDetails();
   };
 
   const handleRemoveNote = (index: number) => {
@@ -123,6 +114,23 @@ const DogTourDetails: React.FC<Props> = ({
       ...prev,
       notes: prev.notes.filter((_n, idx) => index != idx),
     }));
+    syncTourDetails();
+  };
+
+  const syncTourDetails = () => {
+    if (onDogTourChange) {
+      onDogTourChange({
+        dogId: dogInfo.uid,
+        dogName: dogInfo.dogName,
+        ownerId: dogInfo.ownerId,
+        startDate: dogTour.startDate ?? "",
+        endDate: dogTour.endDate ?? "",
+        notes: dogTour.notes,
+        dailyPrice: dogTour.dailyPrice,
+        weight: dogInfo.weight,
+        checked: dogTour.checked,
+      });
+    }
   };
 
   return (
@@ -140,9 +148,9 @@ const DogTourDetails: React.FC<Props> = ({
         <Button
           color={dogTour.checked ? "danger" : "primary"}
           variant="solid"
-          onClick={() =>
-            setDogTour((prev) => ({ ...prev, checked: !prev.checked }))
-          }
+          onClick={() => {
+            setDogTour((prev) => ({ ...prev, checked: !prev.checked }));
+          }}
           disabled={!dogInfo.alive}
         >
           {dogTour.checked ? "移除本次寄养" : "添加本次寄养"}
