@@ -48,7 +48,12 @@ const EditDogTour: React.FC<Props> = ({
       setTour(tourInfo);
       syncDogInfo(tourInfo);
     }
+    setSubmitBtnDisabled(false);
   }, [isModalOpen]);
+
+  useEffect(() => {
+    setSubmitBtnDisabled(!tour?.startDate || !tour.endDate);
+  }, [tour]);
 
   const syncDogInfo = (tourInfo: DogTourInfo) => {
     const dogInfo = {
