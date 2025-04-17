@@ -255,13 +255,6 @@ export const isCreateLogSuccess = (
   return (res as CreateDogSuccessResponse).data.dogLogId != undefined;
 };
 
-export interface DailyCalendarDogDetail {
-  dogName: string;
-  dogLogId: string;
-  breedType: string;
-  iconType: DailyEventType;
-}
-
 export interface DogInfoCreate {
   breedType: string;
   breedName: string;

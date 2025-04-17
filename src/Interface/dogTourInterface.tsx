@@ -5,6 +5,8 @@ export interface DogTourInfo extends NewDogTourInfo {
 export interface NewDogTourInfo {
   dogId: string;
   dogName: string;
+  breedType: string;
+  breedName: string;
   ownerId: string;
   startDate: string;
   endDate: string;

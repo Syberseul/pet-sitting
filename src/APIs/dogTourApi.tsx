@@ -1,6 +1,7 @@
 import {
   CreateTourFail,
   CreateTourSuccess,
+  DogTourInfo,
   getToursFail,
   getToursSuccess,
   NewDogTourInfo,
@@ -15,6 +16,39 @@ export const createTour = async (
       url: "/tour/createTour",
       method: "POST",
       data: tour,
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as CreateTourFail;
+    return apiError;
+  }
+};
+
+export const updateTour = async (
+  tour: DogTourInfo
+): Promise<CreateTourSuccess | CreateTourFail> => {
+  try {
+    const response = await http.request({
+      url: `/tour/updateTour/${tour.uid}`,
+      method: "PUT",
+      data: tour,
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as CreateTourFail;
+    return apiError;
+  }
+};
+
+export const deleteTour = async (
+  id: string
+): Promise<CreateTourSuccess | CreateTourFail> => {
+  try {
+    const response = await http.request({
+      url: `tour/removeTour/${id}`,
+      method: "DELETE",
     });
 
     return response.data;

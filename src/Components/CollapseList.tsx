@@ -12,68 +12,59 @@ import {
 } from "@ant-design/icons";
 import { Collapse, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
-import EditDogLogModal from "./EditDogLog";
-import { deleteDogLog } from "@/APIs/dogApi";
-import { isCreateLogSuccess } from "@/Interface/dogInterface";
+import { DogTourInfo, isCreateTourSuccess } from "@/Interface/dogTourInterface";
+import EditDogTour from "./EditDogTour";
+import { deleteTour } from "@/APIs/dogTourApi";
 
 interface Props {
   data: DailyDataStructure;
   afterModify: () => void;
 }
 
-interface DogListChildren {
-  name: string;
-  iconType: string;
-  dogLogId: string;
-}
-
 interface DisplayItem {}
+
+const initDogTourInfo: DogTourInfo = {
+  uid: "",
+  dogId: "",
+  dogName: "",
+  breedType: "",
+  breedName: "",
+  ownerId: "",
+  startDate: "",
+  endDate: "",
+  notes: [],
+  dailyPrice: 0,
+  weight: 0,
+  checked: true,
+};
 
 function CollapseList({ data, afterModify }: Props) {
   const [listData, setListData] = useState<DisplayItem[]>([]);
 
-  const [UID, setUID] = useState<string>("");
-  const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [tourInfo, setTourInfo] = useState<DogTourInfo>(initDogTourInfo);
 
   useEffect(() => {
     modifyList(data);
   }, [data]);
 
   const modifyList = (data: DailyDataStructure) => {
-    const total: DogListChildren[] = [];
-    const newComing: DogListChildren[] = [];
-    const leaving: DogListChildren[] = [];
+    const total: DogTourInfo[] = [];
+    const newComing: DogTourInfo[] = [];
+    const leaving: DogTourInfo[] = [];
 
     data.activeDogs.map((aDog) => {
-      const dog = {
-        name: `${aDog.dogName} (${aDog.breedType})`,
-        iconType: aDog.iconType,
-        dogLogId: aDog.dogLogId,
-      };
-
-      total.push(dog);
+      total.push(aDog);
     });
 
     data.startingDogs.map((aDog) => {
-      const dog = {
-        name: `${aDog.dogName} (${aDog.breedType})`,
-        iconType: aDog.iconType,
-        dogLogId: aDog.dogLogId,
-      };
-
-      newComing.push(dog);
-      total.push(dog);
+      newComing.push(aDog);
+      total.push(aDog);
     });
 
     data.endingDogs.map((aDog) => {
-      const dog = {
-        name: `${aDog.dogName} (${aDog.breedType})`,
-        iconType: aDog.iconType,
-        dogLogId: aDog.dogLogId,
-      };
-
-      leaving.push(dog);
-      total.push(dog);
+      leaving.push(aDog);
+      total.push(aDog);
     });
 
     const getIcon = (iconType: string) => {
@@ -110,44 +101,56 @@ function CollapseList({ data, afterModify }: Props) {
       }
     };
 
-    const getRow = (data: DogListChildren) => (
-      <div
-        key={data.dogLogId}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div style={{ display: "flex", columnGap: "5px", cursor: "default" }}>
-          {getIcon(data.iconType)}
-          <p>{data.name}</p>
-        </div>
+    const getRow = (data: DogTourInfo) => {
+      return (
+        <>
+          <div style={{ display: "flex", columnGap: "5px", cursor: "default" }}>
+            {getIcon(data.iconType)}
+            <p>
+              {data.dogName} ({data.breedType})
+            </p>
+          </div>
 
-        <div style={{ display: "flex", columnGap: "5px", cursor: "default" }}>
-          <EditOutlined
-            style={{ cursor: "pointer" }}
-            onClick={() => handleClickEditIcon(data)}
-          />
-          <Popconfirm
-            title="删除寄养"
-            description="确定删除本次寄养？"
-            onConfirm={() => handleClickRemoveIcon(data)}
-            okText="删除"
-            cancelText="暂时不"
-          >
-            <DeleteOutlined style={{ cursor: "pointer" }} />
-          </Popconfirm>
-        </div>
-      </div>
-    );
+          <div style={{ display: "flex", columnGap: "5px", cursor: "default" }}>
+            <EditOutlined
+              style={{ cursor: "pointer" }}
+              onClick={() => handleClickEditIcon(data)}
+            />
+            <Popconfirm
+              title="删除寄养"
+              description="确定删除本次寄养？"
+              onConfirm={() => handleClickRemoveIcon(data)}
+              okText="删除"
+              cancelText="暂时不"
+            >
+              <DeleteOutlined style={{ cursor: "pointer" }} />
+            </Popconfirm>
+          </div>
+        </>
+      );
+    };
 
     const res = [];
 
     res.push({
       key: "Total",
       label: `总览 (${total.length})`,
-      children: <>{total.map((dog) => getRow(dog))}</>,
+      children: (
+        <>
+          {total.map((dog) => (
+            <div
+              key={`total-${dog.uid}`}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              {getRow(dog)}
+            </div>
+          ))}
+        </>
+      ),
     });
 
     newComing.length &&
@@ -156,7 +159,18 @@ function CollapseList({ data, afterModify }: Props) {
         label: `新狗狗 (${newComing.length})`,
         children: (
           <>
-            <>{newComing.map((dog) => getRow(dog))}</>
+            {newComing.map((dog) => (
+              <div
+                key={`new-${dog.uid}`}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                {getRow(dog)}
+              </div>
+            ))}
           </>
         ),
       });
@@ -165,34 +179,47 @@ function CollapseList({ data, afterModify }: Props) {
       res.push({
         key: "leaving",
         label: `接走 (${leaving.length})`,
-        children: <>{leaving.map((dog) => getRow(dog))}</>,
+        children: (
+          <>
+            {leaving.map((dog) => (
+              <div
+                key={`leaving-${dog.uid}`}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                {getRow(dog)}
+              </div>
+            ))}
+          </>
+        ),
       });
 
     setListData(res);
   };
 
-  const handleClickEditIcon = (data: DogListChildren) => {
-    const { dogLogId } = data;
-    setUID(dogLogId);
-    setEditModalVisible(true);
+  const handleClickEditIcon = (data: DogTourInfo) => {
+    setTourInfo(data);
+    setIsEditModalOpen(true);
   };
 
-  const handleClickRemoveIcon = async (data: DogListChildren) => {
-    const { dogLogId } = data;
+  const handleClickRemoveIcon = async (data: DogTourInfo) => {
+    const { uid } = data;
 
-    const res = await deleteDogLog(dogLogId);
+    const res = await deleteTour(uid);
 
-    if (isCreateLogSuccess(res)) afterModify();
+    if (isCreateTourSuccess(res)) afterModify();
   };
 
-  const handleEditLog = () => {
-    handleCloseModifyDogLogModal();
+  const handleModifyTour = async () => {
     afterModify();
   };
 
-  const handleCloseModifyDogLogModal = () => {
-    setUID("");
-    setEditModalVisible(false);
+  const handleCloseModal = () => {
+    setIsEditModalOpen(false);
+    setTourInfo(initDogTourInfo);
   };
 
   return (
@@ -206,11 +233,11 @@ function CollapseList({ data, afterModify }: Props) {
         }
       />
 
-      <EditDogLogModal
-        uid={UID}
-        visible={editModalVisible}
-        onSuccess={handleEditLog}
-        onCancel={handleCloseModifyDogLogModal}
+      <EditDogTour
+        isModalOpen={isEditModalOpen}
+        tourInfo={tourInfo}
+        afterModify={handleModifyTour}
+        handleClose={handleCloseModal}
       />
     </div>
   );

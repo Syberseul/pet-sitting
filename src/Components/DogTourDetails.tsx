@@ -1,5 +1,5 @@
 import { BreedInfo, DogInfo, DogTourList } from "@/Interface/dogInterface";
-import { NewDogTourInfo } from "@/Interface/dogTourInterface";
+import { DogTourInfo, NewDogTourInfo } from "@/Interface/dogTourInterface";
 import { getBreedInfo } from "@/util/breedMap";
 import { DeleteOutlined } from "@ant-design/icons";
 import {
@@ -16,8 +16,10 @@ import React, { useEffect, useState } from "react";
 interface Props {
   dogInfo: DogInfo;
   dateRange: [string, string] | null | undefined;
-  onDogTourChange?: (tour: NewDogTourInfo) => void;
+  onDogTourChange?: (tour: NewDogTourInfo | DogTourInfo) => void;
   allToursInSamePeriod: boolean;
+  initDailyPrice?: number;
+  initNotes?: string[];
 }
 
 const defaultBreedInfo: BreedInfo = {
@@ -42,6 +44,8 @@ const DogTourDetails: React.FC<Props> = ({
   dateRange,
   onDogTourChange,
   allToursInSamePeriod,
+  initDailyPrice,
+  initNotes,
 }) => {
   const [breedInfo, setBreedInfo] = useState<BreedInfo>(defaultBreedInfo);
   const [dogTour, setDogTour] = useState<DogTourList>(defaultDogTourList);
@@ -68,8 +72,10 @@ const DogTourDetails: React.FC<Props> = ({
       ...dogTour,
       startDate: start,
       endDate: end,
+      dailyPrice: initDailyPrice!,
+      notes: initNotes!,
     });
-  }, [dateRange]);
+  }, [dateRange, initDailyPrice, initNotes]);
 
   useEffect(() => {
     syncTourDetails();
@@ -122,6 +128,8 @@ const DogTourDetails: React.FC<Props> = ({
       onDogTourChange({
         dogId: dogInfo.uid,
         dogName: dogInfo.dogName,
+        breedType: dogInfo.breedType,
+        breedName: dogInfo.breedName,
         ownerId: dogInfo.ownerId,
         startDate: dogTour.startDate ?? "",
         endDate: dogTour.endDate ?? "",
@@ -129,6 +137,7 @@ const DogTourDetails: React.FC<Props> = ({
         dailyPrice: dogTour.dailyPrice,
         weight: dogInfo.weight,
         checked: dogTour.checked,
+        uid: dogInfo.uid ?? "",
       });
     }
   };

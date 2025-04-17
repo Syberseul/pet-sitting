@@ -55,22 +55,6 @@ export const updateDogLog = async (
   }
 };
 
-export const deleteDogLog = async (
-  id: string
-): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
-  try {
-    const response = await http.request({
-      url: `dogs/removeDogLog/${id}`,
-      method: "DELETE",
-    });
-
-    return response.data;
-  } catch (error) {
-    const apiError = error as CreateDogErrorResponse;
-    return apiError;
-  }
-};
-
 export const getAllDogLogs = async (): Promise<
   DogFormDetails[] | CreateDogErrorResponse
 > => {

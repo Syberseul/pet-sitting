@@ -1,12 +1,12 @@
-import { DailyCalendarDogDetail } from "./dogInterface";
+import { DogTourInfo } from "./dogTourInterface";
 
 export interface DailyDataStructure {
   activeCount: number;
   endingCount: number;
   startingCount: number;
-  activeDogs: DailyCalendarDogDetail[];
-  endingDogs: DailyCalendarDogDetail[];
-  startingDogs: DailyCalendarDogDetail[];
+  activeDogs: DogTourInfo[];
+  endingDogs: DogTourInfo[];
+  startingDogs: DogTourInfo[];
 }
 
 export interface MonthlyDateStructure {

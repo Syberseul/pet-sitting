@@ -1,5 +1,3 @@
-import { DailyCalendarDogDetail } from "@/Interface/dogInterface";
-
 import type { CalendarProps } from "antd";
 
 import { Button, Calendar, ConfigProvider, Modal, Spin } from "antd";
@@ -106,8 +104,16 @@ const Dashboard: React.FC = () => {
               >
                 <div>
                   <section>狗狗数量：{listData.activeCount}</section>
-                  <section>新增：{listData.startingCount}</section>
-                  <section>接走：{listData.endingCount}</section>
+                  {listData.startingCount ? (
+                    <section style={{ color: "#dd3" }}>
+                      新增：{listData.startingCount}
+                    </section>
+                  ) : null}
+                  {listData.endingCount ? (
+                    <section style={{ color: "#f00" }}>
+                      接走：{listData.endingCount}
+                    </section>
+                  ) : null}
                 </div>
                 <ViewDogLogsList data={listData} afterModify={refreshLog} />
               </div>
@@ -187,44 +193,38 @@ const Dashboard: React.FC = () => {
   };
 
   const _analyzeDogLogsByDate = (
-    logs: DogTourInfo[],
+    tours: DogTourInfo[],
     date: string
   ): DailyDataStructure => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       throw new Error("Invalid date format. Please use YYYY-MM-DD");
     }
 
-    const activeDogs: DailyCalendarDogDetail[] = [],
-      endingDogs: DailyCalendarDogDetail[] = [],
-      startingDogs: DailyCalendarDogDetail[] = [];
+    const activeDogs: DogTourInfo[] = [],
+      endingDogs: DogTourInfo[] = [],
+      startingDogs: DogTourInfo[] = [];
 
     const targetDate = dayjs(date);
 
-    logs.forEach((log) => {
-      const logStart = dayjs(log.startDate);
-      const logEnd = dayjs(log.endDate);
-
-      const dog = {
-        dogName: log.dogName,
-        dogLogId: log.dogLogId as string,
-        breedType: log.breedType,
-      };
+    tours.forEach((tour) => {
+      const logStart = dayjs(tour.startDate);
+      const logEnd = dayjs(tour.endDate);
 
       if (logStart.isSame(targetDate))
         startingDogs.push({
-          ...dog,
+          ...tour,
           iconType: DailyEventType.WARNING,
         });
 
       if (logEnd.isSame(targetDate))
         endingDogs.push({
-          ...dog,
+          ...tour,
           iconType: DailyEventType.ERROR,
         });
 
       if (targetDate.isAfter(logStart) && targetDate.isBefore(logEnd)) {
         activeDogs.push({
-          ...dog,
+          ...tour,
           iconType: DailyEventType.SUCCESS,
         });
       }
@@ -337,6 +337,7 @@ const Dashboard: React.FC = () => {
 
   const handleCreateTour = () => {
     closeCreateTourModal();
+    refreshLog();
   };
 
   const closeCreateTourModal = () => {

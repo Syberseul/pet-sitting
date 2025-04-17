@@ -81,6 +81,8 @@ const CreateDogTour: React.FC<Props> = ({
     const tempDogList: NewDogTourInfo[] = ownerDogs.map((dog) => ({
       dogId: dog.uid ?? "",
       dogName: dog.dogName,
+      breedName: dog.breedName,
+      breedType: dog.breedType,
       ownerId: dog.ownerId ?? "",
       weight: dog.weight ?? 0,
       startDate: "",
@@ -113,7 +115,6 @@ const CreateDogTour: React.FC<Props> = ({
   };
 
   const handleAddTour = async () => {
-    // afterCreate();
     const checkedList = tourList.filter((tour) => tour.checked);
 
     const apis: Promise<CreateTourSuccess | CreateTourFail>[] = [];
