@@ -1,5 +1,3 @@
-import { DailyEventType } from "./dashboardInterface";
-
 export interface BreedInfo {
   name: string;
   normalWeightRange: [number, number];
