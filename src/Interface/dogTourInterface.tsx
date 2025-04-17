@@ -29,3 +29,16 @@ export const isCreateTourSuccess = (
 ) => {
   return (res as CreateTourSuccess).data.uid != undefined;
 };
+
+export interface getToursSuccess {
+  data: DogTourInfo[];
+}
+
+export interface getToursFail {
+  error: string;
+  details: string;
+}
+
+export const isGetTourSuccess = (res: getToursSuccess | getToursFail) => {
+  return !(res as getToursFail).error;
+};

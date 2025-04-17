@@ -1,11 +1,4 @@
-import { getAllDogLogs, isFetchDogDataSuccess } from "@/APIs/dogApi";
-
-import CreateDogLog from "@/Components/CreateDogLog";
-
-import {
-  DailyCalendarDogDetail,
-  DogFormDetails,
-} from "@/Interface/dogInterface";
+import { DailyCalendarDogDetail } from "@/Interface/dogInterface";
 
 import type { CalendarProps } from "antd";
 
@@ -29,15 +22,21 @@ import "./index.scss";
 
 import ViewDogLogsList from "@/Components/ViewDogLogsList";
 import CreateDogOwner from "@/Components/CreateDogOwner";
+import CreateDogTour from "@/Components/CreateDogTour";
 import {
   DogOwner,
   getDogOwnersSuccess,
   isGetDogOwnerSuccess,
 } from "@/Interface/dogOwnerInterface";
-import CreateDogTour from "@/Components/CreateDogTour";
 import { useDispatch } from "react-redux";
 import { modifyDogOwner, setDogOwners } from "@/store/modules/dogOwnersStore";
 import { getDogOwners } from "@/APIs/dogOwnerApi";
+import { getTours } from "@/APIs/dogTourApi";
+import {
+  DogTourInfo,
+  getToursSuccess,
+  isGetTourSuccess,
+} from "@/Interface/dogTourInterface";
 
 dayjs.locale("zh-cn");
 
@@ -46,7 +45,7 @@ const initDogOwnerInfo: DogOwner = { name: "", dogs: [], isFromWx: false };
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
 
-  const [dogLogs, setDogLogs] = useState<DogFormDetails[]>([]);
+  const [tours, setTours] = useState<DogTourInfo[]>([]);
 
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const [refreshFlag, setRefreshFlag] = useState<number>(0);
@@ -66,10 +65,13 @@ const Dashboard: React.FC = () => {
     setIsLoadingData(true);
     setIsLoadingDogOwners(true);
 
-    const res = await getAllDogLogs();
+    const tours = await getTours();
     const dogOwners = await getDogOwners();
 
-    if (isFetchDogDataSuccess(res)) setDogLogs(res);
+    if (isGetTourSuccess(tours)) {
+      const { data } = tours as getToursSuccess;
+      setTours(data);
+    }
 
     if (isGetDogOwnerSuccess(dogOwners)) {
       const { data } = dogOwners as getDogOwnersSuccess;
@@ -82,7 +84,7 @@ const Dashboard: React.FC = () => {
 
   const dateCellRender = (value: Dayjs) => {
     const listData: DailyDataStructure = _analyzeDogLogsByDate(
-      dogLogs,
+      tours,
       value.format("YYYY-MM-DD")
     );
 
@@ -119,7 +121,7 @@ const Dashboard: React.FC = () => {
   };
 
   const monthCellRender = (value: Dayjs) => {
-    const res = _analyzeDogLogsByMonth(dogLogs, value.format("YYYY-MM"));
+    const res = _analyzeDogLogsByMonth(tours, value.format("YYYY-MM"));
 
     const { highest, lowest, newDog, leftDog } = res;
 
@@ -185,7 +187,7 @@ const Dashboard: React.FC = () => {
   };
 
   const _analyzeDogLogsByDate = (
-    logs: DogFormDetails[],
+    logs: DogTourInfo[],
     date: string
   ): DailyDataStructure => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -239,7 +241,7 @@ const Dashboard: React.FC = () => {
   };
 
   const _analyzeDogLogsByMonth = (
-    logs: DogFormDetails[],
+    logs: DogTourInfo[],
     month: string
   ): MonthlyDateStructure => {
     if (!/^\d{4}-\d{2}$/.test(month)) {
@@ -345,7 +347,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <CreateDogLog afterCreate={refreshLog} />
       <CreateDogOwner afterCreate={handleCreateDogOwner} />
       <Button
         type="primary"
