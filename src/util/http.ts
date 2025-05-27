@@ -4,6 +4,7 @@ import { SignUpErrorResponse } from "@/Interface/authInterface";
 import { userLogout, userRefreshToken } from "@/store/modules/userStore";
 import { RefreshTokenResponse } from "@/Interface/apiInterface";
 import store from "@/store";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 
 const requestInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -57,10 +58,26 @@ requestInstance.interceptors.response.use(
           }
         );
 
+        if (!response.data.token) {
+          const apiError = {
+            error: "Failed refresh token!",
+            code: 400,
+          } as SignUpErrorResponse;
+          dispatch(userLogout());
+          return apiError;
+        }
+
+        const auth = getAuth();
+        const userCredential = await signInWithCustomToken(
+          auth,
+          response.data.token
+        );
+        const newFirebaseToken = await userCredential.user.getIdToken();
+
         dispatch(
           userRefreshToken({
             uid: userData.uid,
-            token: response.data.token,
+            token: newFirebaseToken,
             refreshToken: response.data.refreshToken,
             email: userData.email,
           })
