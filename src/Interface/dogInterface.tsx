@@ -3,7 +3,7 @@ export interface BreedInfo {
   normalWeightRange: [number, number];
   searchName?: string;
   size?: DogSize;
-  price?: number;
+  dailyPrice?: number;
 }
 
 export enum DogSize {

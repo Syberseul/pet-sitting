@@ -107,7 +107,8 @@ function CollapseList({ data, afterModify }: Props) {
           <div style={{ display: "flex", columnGap: "5px", cursor: "default" }}>
             {getIcon(data.iconType)}
             <p>
-              {data.dogName} ({data.breedType})
+              {data.dogName} (
+              {data.breedType == "" ? data.breedName : data.breedType})
             </p>
           </div>
 

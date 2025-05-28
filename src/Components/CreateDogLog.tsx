@@ -126,9 +126,9 @@ const CreateDogLog: React.FC<CreateDogLogModalProps> = ({ afterCreate }) => {
       return;
     }
 
-    if (breedInfo.price) {
+    if (breedInfo.dailyPrice) {
       form.setFieldsValue({
-        dailyPrice: breedInfo.price,
+        dailyPrice: breedInfo.dailyPrice,
       });
     }
 

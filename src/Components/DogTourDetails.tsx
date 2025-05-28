@@ -52,12 +52,12 @@ const DogTourDetails: React.FC<Props> = ({
   const [note, setNote] = useState<string>("");
 
   useEffect(() => {
-    const info = getBreedInfo(dogInfo.breedType);
+    const info = getBreedInfo(dogInfo.breedName);
     setBreedInfo(info as BreedInfo);
     setDogTour({
       startDate: dogTour.startDate,
       endDate: dogTour.endDate,
-      dailyPrice: info!.price as number,
+      dailyPrice: info!.dailyPrice as number,
       weight: dogInfo.weight ?? 0,
       notes: dogTour.notes,
       checked: dogInfo.alive,
@@ -93,10 +93,10 @@ const DogTourDetails: React.FC<Props> = ({
     syncTourDetails();
   };
 
-  const handleDailyPriceChange = (price: number | null) => {
+  const handleDailyPriceChange = (dailyPrice: number | null) => {
     setDogTour({
       ...dogTour,
-      dailyPrice: price ?? 0,
+      dailyPrice: dailyPrice ?? 0,
     });
     syncTourDetails();
   };
@@ -191,7 +191,7 @@ const DogTourDetails: React.FC<Props> = ({
         <p style={{ width: "90px" }}>单日寄养费：</p>
         <InputNumber
           addonAfter="$"
-          defaultValue={breedInfo.price}
+          defaultValue={breedInfo.dailyPrice}
           onChange={(e) => handleDailyPriceChange(e)}
           value={dogTour.dailyPrice}
           disabled={!dogInfo.alive}

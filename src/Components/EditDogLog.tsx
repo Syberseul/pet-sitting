@@ -191,9 +191,9 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
       return;
     }
 
-    if (breedInfo.price) {
+    if (breedInfo.dailyPrice) {
       form.setFieldsValue({
-        dailyPrice: breedInfo.price,
+        dailyPrice: breedInfo.dailyPrice,
       });
     }
 
@@ -245,7 +245,6 @@ const EditDogLogModal: React.FC<EditDogLogModalProps> = ({
   };
 
   const handleAfterWeightChange = (val: number | null) => {
-    console.log(val, breed.normalWeightRange);
     if (!val) return;
 
     const { normalWeightRange } = breed;
