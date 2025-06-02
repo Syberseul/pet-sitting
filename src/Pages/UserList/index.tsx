@@ -133,7 +133,7 @@ function UserList() {
     return (
       <Switch
         disabled={!isEditable || isUpdatingUser}
-        defaultChecked={user.receiveNotifications}
+        defaultChecked={userReceiveNotification}
         onChange={() => handleToggleUserReceiveNotification(user)}
         loading={
           isUpdatingUser && selectedUser != null && selectedUser.id == user.id

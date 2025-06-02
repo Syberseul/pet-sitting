@@ -4,7 +4,6 @@ import {
   SignUpRequest,
   SignUpSuccessResponse,
 } from "@/Interface/authInterface";
-import { User, UserData } from "@/Interface/userInterface";
 
 import { http } from "@/util";
 
