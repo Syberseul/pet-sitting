@@ -34,6 +34,22 @@ export const router = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/introduction",
+        element: lazyLoad(() => import("@/Pages/Introduction")),
+      },
+      {
+        path: "/owners",
+        element: lazyLoad(() => import("@/Pages/DogOwnerList")),
+      },
+      {
+        path: "/users",
+        element: lazyLoad(() => import("@/Pages/UserList")),
+      },
+      {
+        path: "/tours",
+        element: lazyLoad(() => import("@/Pages/TourList")),
+      },
     ],
   },
 ]);

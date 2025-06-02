@@ -58,34 +58,40 @@ requestInstance.interceptors.response.use(
           }
         );
 
+        const apiError = {
+          error: "Failed refresh token!",
+          code: 400,
+        } as SignUpErrorResponse;
+
         if (!response.data.token) {
-          const apiError = {
-            error: "Failed refresh token!",
-            code: 400,
-          } as SignUpErrorResponse;
           dispatch(userLogout());
           return apiError;
         }
 
-        const auth = getAuth();
-        const userCredential = await signInWithCustomToken(
-          auth,
-          response.data.token
-        );
-        const newFirebaseToken = await userCredential.user.getIdToken();
+        try {
+          const auth = getAuth();
+          const userCredential = await signInWithCustomToken(
+            auth,
+            response.data.token
+          );
+          const newFirebaseToken = await userCredential.user.getIdToken();
 
-        dispatch(
-          userRefreshToken({
-            uid: userData.uid,
-            token: newFirebaseToken,
-            refreshToken: response.data.refreshToken,
-            email: userData.email,
-          })
-        );
+          dispatch(
+            userRefreshToken({
+              uid: userData.uid,
+              token: newFirebaseToken,
+              refreshToken: response.data.refreshToken,
+              email: userData.email,
+            })
+          );
 
-        if (originalRequest) {
-          originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
-          return requestInstance(originalRequest);
+          if (originalRequest) {
+            originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
+            return requestInstance(originalRequest);
+          }
+        } catch (err) {
+          dispatch(userLogout());
+          return apiError;
         }
       } catch (error) {
         const apiError = error as SignUpErrorResponse;

@@ -1,27 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Menu, Avatar, Space } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { TranslationOutlined, UserOutlined } from "@ant-design/icons";
 
 import type { MenuInfo } from "rc-menu/lib/interface";
 
 import "./index.scss";
 import { useUserState } from "@/util/customHooks";
+import { UserRole } from "@/enums";
 
 const { Header, Content, Footer } = Layout;
 
 const App: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useUserState();
 
   const [selectedKey, setSelectedKey] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      let routeKey = "/";
+      if (user.role === UserRole.ADMIN || user.role === UserRole.DEVELOPER)
+        routeKey = "/dashboard";
+      else routeKey = "/introduction";
+
+      setSelectedKey([routeKey]);
+      navigate(routeKey);
+    }
+  }, [location.pathname, user.role]);
 
   const navItem = [
     ...(user.uid
       ? [
           {
-            key: "/dashboard",
-            label: "总览",
+            key: [UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role)
+              ? "/dashboard"
+              : "/introduction",
+            label: [UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role)
+              ? "寄养信息"
+              : "首页",
+          },
+          {
+            key: "/owners",
+            label: "宠物主人",
+            hidden: ![UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role),
+          },
+          {
+            key: "/users",
+            label: "用户管理",
+            hidden: ![UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role),
+          },
+          {
+            key: "/tours",
+            label: "旅行信息",
+            hidden: user.role !== UserRole.DOG_OWNER,
           },
         ]
       : []),
@@ -58,7 +91,7 @@ const App: React.FC = () => {
           theme="dark"
           mode="horizontal"
           selectedKeys={selectedKey}
-          items={navItem}
+          items={navItem.filter((item) => !item.hidden)}
           style={{ flex: 1, minWidth: 0 }}
           onClick={handleClickMenu}
         />

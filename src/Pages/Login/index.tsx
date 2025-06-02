@@ -7,7 +7,7 @@ import { useUserState } from "@/util/customHooks";
 import UserInfo from "./UserInfo";
 
 function LoginPage() {
-  const [showSignUp, setShowSignUp] = useState<boolean>(true);
+  const [showSignUp, setShowSignUp] = useState<boolean>(false);
 
   const user = useUserState();
 

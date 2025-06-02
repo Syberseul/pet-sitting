@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { formItemLayout, validateMessages } from "./utilConsts/authForm";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 
 function SingUp(props: Props) {
   const { toggleShowSignUp } = props;
@@ -38,7 +39,19 @@ function SingUp(props: Props) {
     const res = await signUp(user);
 
     if (isSignUpSuccess(res)) {
-      navigate("/dashboard");
+      const auth = getAuth();
+      const userCredential = await signInWithCustomToken(auth, res.token);
+      const firebaseIdToken = await userCredential.user.getIdToken();
+
+      if (!firebaseIdToken) {
+        setSignUpFailed({
+          showSignUpFailed: true,
+          errMsg: "Invalid firebase id token detected",
+        });
+        return;
+      } else res.token = firebaseIdToken;
+
+      navigate("/");
       dispatch(userLogin(res));
     } else
       setSignUpFailed({
