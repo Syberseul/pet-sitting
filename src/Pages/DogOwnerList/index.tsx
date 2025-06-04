@@ -33,7 +33,6 @@ function DogOwnerList() {
   const [selectedDog, setSelectedDog] = useState<DogInfo | null>(null);
   const [isAddDogModalOpen, setIsAddDogModalOpen] = useState(false);
   const [isEditDogModalOpen, setIsEditDogModalOpen] = useState(false);
-  const [isRemoveDogModalOpen, setIsRemoveDogModalOpen] = useState(false);
   const [isModifyingDog, setIsModifyingDog] = useState(false);
 
   useEffect(() => {
