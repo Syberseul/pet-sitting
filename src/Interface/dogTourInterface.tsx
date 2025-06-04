@@ -14,6 +14,8 @@ export interface NewDogTourInfo {
   dailyPrice: number;
   weight: number;
   checked: boolean;
+  sex: number;
+  desex: boolean;
   [key: string]: any;
 }
 

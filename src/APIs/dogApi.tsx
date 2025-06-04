@@ -1,78 +1,46 @@
-import {
-  CreateDogErrorResponse,
-  CreateDogSuccessResponse,
-  DogFormDetails,
-} from "@/Interface/dogInterface";
+import { DogInfo, DogInfoCreate } from "@/Interface/dogInterface";
 import { http } from "@/util";
 
-export const createDogLog = async (
-  dog: DogFormDetails
-): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
+export const createDog = async (dog: DogInfoCreate) => {
   try {
     const response = await http.request({
-      url: "dogs/createDogLog",
+      url: "dogs/createDog",
       method: "POST",
       data: dog,
     });
 
     return response.data;
   } catch (error) {
-    const apiError = error as CreateDogErrorResponse;
-    return apiError;
+    return {
+      error,
+    };
   }
 };
 
-export const getDogLog = async (
-  id: string
-): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
+export const updateDog = async (dog: DogInfo) => {
   try {
     const response = await http.request({
-      url: `dogs/getDogLog/${id}`,
-      method: "GET",
-    });
-
-    return response.data;
-  } catch (error) {
-    const apiError = error as CreateDogErrorResponse;
-    return apiError;
-  }
-};
-
-export const updateDogLog = async (
-  dog: DogFormDetails
-): Promise<CreateDogSuccessResponse | CreateDogErrorResponse> => {
-  try {
-    const response = await http.request({
-      url: `dogs/updateDogLog/${dog.dogLogId}`,
+      url: "dogs/updateDog",
       method: "PUT",
       data: dog,
     });
 
     return response.data;
   } catch (error) {
-    const apiError = error as CreateDogErrorResponse;
-    return apiError;
+    return { error };
   }
 };
 
-export const getAllDogLogs = async (): Promise<
-  DogFormDetails[] | CreateDogErrorResponse
-> => {
+export const removeDog = async (dog: DogInfo) => {
   try {
     const response = await http.request({
-      url: "dogs/getAllDogLogs",
-      method: "GET",
+      url: "dogs/removeDog",
+      method: "DELETE",
+      data: dog,
     });
 
     return response.data;
   } catch (error) {
-    const apiError = error as CreateDogErrorResponse;
-    return apiError;
+    return { error };
   }
-};
-
-export const isFetchDogDataSuccess = (
-  res: DogFormDetails[] | CreateDogErrorResponse
-): res is DogFormDetails[] => {
-  return (res as DogFormDetails[]).length >= 0;
 };

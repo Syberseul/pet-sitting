@@ -138,6 +138,8 @@ const DogTourDetails: React.FC<Props> = ({
         weight: dogInfo.weight,
         checked: dogTour.checked,
         uid: dogInfo.uid ?? "",
+        sex: dogInfo.sex,
+        desex: dogInfo.desex,
       });
     }
   };

@@ -237,22 +237,6 @@ export interface NoteDetails {
   editIndex: number;
 }
 
-export interface CreateDogSuccessResponse {
-  data: DogFormDetails;
-  message: string;
-}
-
-export interface CreateDogErrorResponse {
-  error: string;
-  details: string;
-}
-
-export const isCreateLogSuccess = (
-  res: CreateDogSuccessResponse | CreateDogErrorResponse
-): res is CreateDogSuccessResponse => {
-  return (res as CreateDogSuccessResponse).data.dogLogId != undefined;
-};
-
 export interface DogInfoCreate {
   breedType: string;
   breedName: string;
@@ -261,11 +245,15 @@ export interface DogInfoCreate {
   alive: boolean;
   ownerId?: string;
   uid?: string;
+  desex?: boolean;
+  sex?: number;
 }
 
 export interface DogInfo extends DogInfoCreate {
   ownerId: string;
   uid: string;
+  desex: boolean;
+  sex: number;
 }
 
 export interface DogListInfo {

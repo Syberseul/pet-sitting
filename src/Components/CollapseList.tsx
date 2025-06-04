@@ -36,6 +36,8 @@ const initDogTourInfo: DogTourInfo = {
   dailyPrice: 0,
   weight: 0,
   checked: true,
+  sex: 0,
+  desex: false,
 };
 
 function CollapseList({ data, afterModify }: Props) {

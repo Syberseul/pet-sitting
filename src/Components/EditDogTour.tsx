@@ -24,6 +24,8 @@ const initDogInfo: DogInfo = {
   alive: true,
   ownerId: "",
   uid: "",
+  sex: 0,
+  desex: false,
 };
 
 const EditDogTour: React.FC<Props> = ({
@@ -64,6 +66,8 @@ const EditDogTour: React.FC<Props> = ({
       alive: true,
       ownerId: tourInfo.ownerId,
       uid: tourInfo.uid,
+      sex: tourInfo.sex,
+      desex: tourInfo.desex,
     };
     setDog(dogInfo);
     setDateRange([tourInfo.startDate, tourInfo.endDate]);

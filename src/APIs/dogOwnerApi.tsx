@@ -24,6 +24,28 @@ export const createDogOwner = async (
   }
 };
 
+export const updateDogOwner = async (
+  owner: DogOwner
+): Promise<CreateDogOwnerSuccessResponse | CreateDogOwnerErrorResponse> => {
+  try {
+    if (!owner.uid)
+      return {
+        error: "Missing required properties",
+        details: "Missing owner ID",
+      };
+    const response = await http.request({
+      url: `/owner/update/${owner.uid!}`,
+      method: "PUT",
+      data: owner,
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as CreateDogOwnerErrorResponse;
+    return apiError;
+  }
+};
+
 export const getDogOwners = async (): Promise<
   getDogOwnersSuccess | getDogOwnersFail
 > => {
