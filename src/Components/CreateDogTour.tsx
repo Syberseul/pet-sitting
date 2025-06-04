@@ -90,6 +90,8 @@ const CreateDogTour: React.FC<Props> = ({
       dailyPrice: 0,
       notes: [],
       checked: dog.alive,
+      sex: 0,
+      desex: false,
     }));
     setTourList(tempDogList);
     setAllToursInSamePeriod(ownerDogs.length >= 2);
