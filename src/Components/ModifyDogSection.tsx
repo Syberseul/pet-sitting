@@ -39,7 +39,7 @@ const ModifyDogSection: React.FC<Props> = ({
     useState<DogInfoCreate>(defaultDogInfoCreate);
 
   useEffect(() => {
-    if (addedDogList?.length) {
+    if (addedDogList?.length && !dogList.length) {
       const modifiedDogList = addedDogList.map(({ dog }) => ({
         dog: dog,
         key: dog.uid!,
@@ -77,7 +77,7 @@ const ModifyDogSection: React.FC<Props> = ({
 
       updateDogList(modifiedDogList);
     }
-  }, []);
+  }, [addedDogList]);
 
   const updateDogList = (newList: DogListInfo[]) => {
     setDogList(newList);
@@ -92,11 +92,11 @@ const ModifyDogSection: React.FC<Props> = ({
   const handleFinishAddDog = (dog: DogInfoCreate) => {
     setDogInfoCreate(defaultDogInfoCreate);
     setShowAddSection(false);
-    const newDog = { ...dog, alive: true };
+    const newDog = { ...dog, alive: true, uid: dog.uid ?? v4() };
     setDogs((prev) => [...prev, newDog]);
     const newDogItem = {
       dog: newDog,
-      key: newDog.uid ? newDog.uid : v4(),
+      key: newDog.uid,
       label: newDog.dogName,
       children: (
         <div
@@ -115,7 +115,7 @@ const ModifyDogSection: React.FC<Props> = ({
             e?.preventDefault();
             handleRemoveDog({
               dog: newDog,
-              key: newDog.uid ? newDog.uid : v4(),
+              key: newDog.uid,
               label: newDog.dogName,
             });
           }}
@@ -128,8 +128,11 @@ const ModifyDogSection: React.FC<Props> = ({
   };
 
   const handleRemoveDog = (dog: DogListInfo) => {
-    const newDogList = dogList.filter((d) => d.key !== dog.key);
-    updateDogList(newDogList);
+    setDogList((prevList) => {
+      const newList = prevList.filter((d) => d.key !== dog.key);
+      onSave(newList);
+      return newList;
+    });
   };
 
   return display == Display.FORM ? (
