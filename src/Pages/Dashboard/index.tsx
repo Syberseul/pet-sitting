@@ -80,6 +80,25 @@ const Dashboard: React.FC = () => {
     setIsLoadingDogOwners(false);
   };
 
+  const getDogDisplayNumber = (listData: DailyDataStructure) => {
+    const { activeDogs, startingDogs, endingDogs } = listData;
+
+    const startingMap = new Map(startingDogs.map((dog) => [dog.dogId, dog]));
+    const overlappingDogs = endingDogs.filter((dog) =>
+      startingMap.has(dog.dogId)
+    );
+
+    const maxCount =
+      activeDogs.length +
+      startingDogs.length +
+      endingDogs.length -
+      overlappingDogs.length;
+
+    const minCount = Math.max(0, maxCount - endingDogs.length);
+
+    return maxCount === minCount ? maxCount : `${maxCount} (${minCount})`;
+  };
+
   const dateCellRender = (value: Dayjs) => {
     const listData: DailyDataStructure = _analyzeDogLogsByDate(
       tours,
@@ -103,7 +122,10 @@ const Dashboard: React.FC = () => {
                 }}
               >
                 <div>
-                  <section>狗狗数量：{listData.activeCount}</section>
+                  <section>
+                    狗狗数量：
+                    {getDogDisplayNumber(listData)}
+                  </section>
                   {listData.startingCount ? (
                     <section style={{ color: "#dd3" }}>
                       新增：{listData.startingCount}
@@ -196,13 +218,9 @@ const Dashboard: React.FC = () => {
     tours: DogTourInfo[],
     date: string
   ): DailyDataStructure => {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      throw new Error("Invalid date format. Please use YYYY-MM-DD");
-    }
-
-    const activeDogs: DogTourInfo[] = [],
-      endingDogs: DogTourInfo[] = [],
-      startingDogs: DogTourInfo[] = [];
+    const activeDogs: DogTourInfo[] = [];
+    const endingDogs: DogTourInfo[] = [];
+    const startingDogs: DogTourInfo[] = [];
 
     const targetDate = dayjs(date);
 
@@ -210,33 +228,32 @@ const Dashboard: React.FC = () => {
       const logStart = dayjs(tour.startDate);
       const logEnd = dayjs(tour.endDate);
 
-      if (logStart.isSame(targetDate))
-        startingDogs.push({
-          ...tour,
-          iconType: DailyEventType.WARNING,
-        });
-
-      if (logEnd.isSame(targetDate))
-        endingDogs.push({
-          ...tour,
-          iconType: DailyEventType.ERROR,
-        });
-
-      if (targetDate.isAfter(logStart) && targetDate.isBefore(logEnd)) {
-        activeDogs.push({
-          ...tour,
-          iconType: DailyEventType.SUCCESS,
-        });
+      if (logStart.isSame(logEnd, "day")) {
+        if (logStart.isSame(targetDate, "day")) {
+          startingDogs.push({ ...tour, iconType: DailyEventType.WARNING });
+          endingDogs.push({ ...tour, iconType: DailyEventType.ERROR });
+        }
+      } else {
+        if (logStart.isSame(targetDate, "day")) {
+          startingDogs.push({ ...tour, iconType: DailyEventType.WARNING });
+        } else if (logEnd.isSame(targetDate, "day")) {
+          endingDogs.push({ ...tour, iconType: DailyEventType.ERROR });
+        } else if (
+          targetDate.isAfter(logStart, "day") &&
+          targetDate.isBefore(logEnd, "day")
+        ) {
+          activeDogs.push({ ...tour, iconType: DailyEventType.SUCCESS });
+        }
       }
     });
 
     return {
-      activeCount: activeDogs.length + endingDogs.length + startingDogs.length,
+      activeCount: activeDogs.length,
       endingCount: endingDogs.length,
       startingCount: startingDogs.length,
-      activeDogs: activeDogs,
-      endingDogs: endingDogs,
-      startingDogs: startingDogs,
+      activeDogs,
+      endingDogs,
+      startingDogs,
     };
   };
 
