@@ -1,5 +1,5 @@
 import { createDog, removeDog, updateDog } from "@/APIs/dogApi";
-import { getDogOwners } from "@/APIs/dogOwnerApi";
+import { getDogOwners, removeDogOwner } from "@/APIs/dogOwnerApi";
 import CreateDogOwner from "@/Components/CreateDogOwner";
 import EditDogOwner from "@/Components/EditDogOwner";
 
@@ -81,6 +81,16 @@ function DogOwnerList() {
                 setIsEditDogOwnerModalOpen(true);
               }}
             />
+          </Tooltip>
+
+          <Tooltip placement="left" title={"Remove Dog Owner"} color="red">
+            <Popconfirm
+              title="删除狗狗主人"
+              description="你确定要删除这个狗狗主人么?"
+              onConfirm={(e) => handleRemoveDogOwner(e, record as DogOwner)}
+            >
+              <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
+            </Popconfirm>
           </Tooltip>
         </div>
       ),
@@ -224,6 +234,24 @@ function DogOwnerList() {
     }
 
     closeModifyDogModal();
+  };
+
+  const handleRemoveDogOwner = async (
+    e: React.MouseEvent<HTMLElement, MouseEvent> | undefined,
+    ownerInfo: DogOwner
+  ) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    try {
+      const response = await removeDogOwner(ownerInfo.uid!);
+
+      if (response.error) console.log(response.error);
+      else {
+        setDogOwners(dogOwners.filter((owner) => owner.uid != ownerInfo.uid));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleRemoveDog = async (

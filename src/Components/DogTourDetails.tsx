@@ -10,7 +10,7 @@ import {
   InputNumber,
   Popconfirm,
 } from "antd";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
 
 interface Props {
@@ -50,47 +50,57 @@ const DogTourDetails: React.FC<Props> = ({
   const [breedInfo, setBreedInfo] = useState<BreedInfo>(defaultBreedInfo);
   const [dogTour, setDogTour] = useState<DogTourList>(defaultDogTourList);
   const [note, setNote] = useState<string>("");
+  const [selectedRange, setSelectedRange] = useState<
+    [Dayjs | null, Dayjs | null]
+  >([
+    dogTour.startDate ? dayjs(dogTour.startDate) : null,
+    dogTour.endDate ? dayjs(dogTour.endDate) : null,
+  ]);
 
   useEffect(() => {
     const info = getBreedInfo(dogInfo.breedName);
     setBreedInfo(info as BreedInfo);
-    setDogTour({
-      startDate: dogTour.startDate,
-      endDate: dogTour.endDate,
-      dailyPrice: info!.dailyPrice as number,
+
+    setDogTour((prev) => ({
+      ...prev,
+      dailyPrice: initDailyPrice ?? info?.dailyPrice ?? 0,
       weight: dogInfo.weight ?? 0,
-      notes: dogTour.notes,
+      breedName: dogInfo.breedName,
       checked: dogInfo.alive,
-    });
+      notes: initNotes ?? [],
+    }));
   }, [dogInfo]);
 
   useEffect(() => {
     if (!dateRange) return;
 
     const [start, end] = dateRange;
-    setDogTour({
-      ...dogTour,
-      startDate: start,
-      endDate: end,
-      dailyPrice: initDailyPrice!,
-      notes: initNotes!,
-    });
-  }, [dateRange, initDailyPrice, initNotes]);
+    setDogTour((prev) => ({
+      ...prev,
+      startDate: start || prev.startDate,
+      endDate: end || prev.endDate,
+    }));
+
+    setSelectedRange([start ? dayjs(start) : null, end ? dayjs(end) : null]);
+  }, [dateRange]);
 
   useEffect(() => {
     syncTourDetails();
   }, [dogTour]);
 
   const handleDateRangeSelect: RangePickerProps["onChange"] = (
-    _dates,
+    dates,
     dateStrings
   ) => {
-    setDogTour({
-      ...dogTour,
-      startDate: dateStrings[0],
-      endDate: dateStrings[1],
-    });
-    syncTourDetails();
+    setSelectedRange(dates!);
+
+    if (dateStrings[0] && dateStrings[1]) {
+      setDogTour((prev) => ({
+        ...prev,
+        startDate: dateStrings[0],
+        endDate: dateStrings[1],
+      }));
+    }
   };
 
   const handleDailyPriceChange = (dailyPrice: number | null) => {
@@ -181,10 +191,7 @@ const DogTourDetails: React.FC<Props> = ({
         <RangePicker
           placeholder={["起始时间", "结束时间"]}
           onChange={handleDateRangeSelect}
-          value={[
-            dogTour.startDate ? dayjs(dogTour.startDate) : null,
-            dogTour.endDate ? dayjs(dogTour.endDate) : null,
-          ]}
+          value={selectedRange}
           disabled={allToursInSamePeriod || !dogInfo.alive}
         />
       </div>

@@ -61,3 +61,16 @@ export const getDogOwners = async (): Promise<
     return apiError;
   }
 };
+
+export const removeDogOwner = async (ownerId: string) => {
+  try {
+    const response = await http.request({
+      url: `owner/remove/${ownerId}`,
+      method: "DELETE",
+    });
+
+    return response.data;
+  } catch (error) {
+    return { error };
+  }
+};
