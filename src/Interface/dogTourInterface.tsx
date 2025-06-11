@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface DogTourInfo extends NewDogTourInfo {
   uid: string;
 }
@@ -46,3 +48,10 @@ export interface getToursFail {
 export const isGetTourSuccess = (res: getToursSuccess | getToursFail) => {
   return !(res as getToursFail).error;
 };
+
+export interface timelineTourInfo {
+  tourInfo: DogTourInfo;
+  displayDate: string;
+  isSameDayEvent: boolean;
+  icon?: React.ReactNode;
+}

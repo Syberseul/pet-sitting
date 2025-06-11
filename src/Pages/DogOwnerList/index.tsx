@@ -305,7 +305,15 @@ function DogOwnerList() {
     <LoadingList />
   ) : (
     <>
-      <CreateDogOwner afterCreate={loadDogOwners} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "10px",
+        }}
+      >
+        <CreateDogOwner afterCreate={loadDogOwners} />
+      </div>
       <Table<DogOwner>
         columns={columns}
         dataSource={dogOwners}

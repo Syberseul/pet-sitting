@@ -5,3 +5,21 @@
     border-radius: 5px;
   }
 }
+
+.ant-timeline-item-label {
+  width: calc(20% - 12px) !important;
+}
+
+.ant-timeline-item-tail,
+.ant-timeline-item-head {
+  inset-inline-start: 25% !important;
+}
+
+.ant-timeline-item-content {
+  width: calc(70% - 12px) !important;
+  inset-inline-start: calc(30% - 12px) !important;
+  span:hover {
+    cursor: pointer;
+    font-weight: bold;
+  }
+}

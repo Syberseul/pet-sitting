@@ -17,3 +17,8 @@ export enum Display {
   "FORM" = "form",
   "COLLAPSE" = "collapse",
 }
+
+export enum DashboardView {
+  "CALENDAR" = "calendar",
+  "TIMELINE" = "timeline",
+}
