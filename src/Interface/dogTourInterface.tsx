@@ -2,6 +2,7 @@ import React from "react";
 
 export interface DogTourInfo extends NewDogTourInfo {
   uid: string;
+  status: number;
 }
 
 export interface NewDogTourInfo {
@@ -55,3 +56,13 @@ export interface timelineTourInfo {
   isSameDayEvent: boolean;
   icon?: React.ReactNode;
 }
+
+export interface markTourFinishSuccess {
+  data: DogTourInfo;
+}
+
+export const isMarkTourFinishSuccess = (
+  res: markTourFinishSuccess | CreateTourFail
+) => {
+  return !(res as CreateTourFail).error;
+};

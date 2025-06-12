@@ -10,11 +10,16 @@ import {
   EditOutlined,
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { Collapse, Popconfirm } from "antd";
+import { Button, Collapse, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
-import { DogTourInfo, isCreateTourSuccess } from "@/Interface/dogTourInterface";
+import {
+  DogTourInfo,
+  isCreateTourSuccess,
+  isMarkTourFinishSuccess,
+} from "@/Interface/dogTourInterface";
 import EditDogTour from "./EditDogTour";
-import { deleteTour } from "@/APIs/dogTourApi";
+import { deleteTour, markTourFinish } from "@/APIs/dogTourApi";
+import { TourStatus } from "@/enums";
 
 interface Props {
   data: DailyDataStructure;
@@ -38,6 +43,7 @@ const initDogTourInfo: DogTourInfo = {
   checked: true,
   sex: 0,
   desex: false,
+  status: TourStatus.PENDING,
 };
 
 function CollapseList({ data, afterModify }: Props) {
@@ -45,6 +51,8 @@ function CollapseList({ data, afterModify }: Props) {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [tourInfo, setTourInfo] = useState<DogTourInfo>(initDogTourInfo);
+
+  const [isMarkingTourFinish, setIsMarkingTourFinish] = useState(false);
 
   useEffect(() => {
     modifyList(data);
@@ -128,6 +136,19 @@ function CollapseList({ data, afterModify }: Props) {
             >
               <DeleteOutlined style={{ cursor: "pointer" }} />
             </Popconfirm>
+            {data.status !== TourStatus.FINISHED ? (
+              <Button
+                type="primary"
+                loading={isMarkingTourFinish}
+                onClick={() => handleMarkTourFinish(data)}
+              >
+                Mark tour finish
+              </Button>
+            ) : (
+              <Button color="danger" variant="outlined">
+                Finished
+              </Button>
+            )}
           </div>
         </>
       );
@@ -214,6 +235,16 @@ function CollapseList({ data, afterModify }: Props) {
     const res = await deleteTour(uid);
 
     if (isCreateTourSuccess(res)) afterModify();
+  };
+
+  const handleMarkTourFinish = async (data: DogTourInfo) => {
+    setIsMarkingTourFinish(true);
+
+    const res = await markTourFinish(data.uid);
+
+    setIsMarkingTourFinish(false);
+
+    if (isMarkTourFinishSuccess(res)) afterModify();
   };
 
   const handleModifyTour = async () => {

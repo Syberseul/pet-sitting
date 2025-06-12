@@ -4,6 +4,7 @@ import {
   DogTourInfo,
   getToursFail,
   getToursSuccess,
+  markTourFinishSuccess,
   NewDogTourInfo,
 } from "@/Interface/dogTourInterface";
 import { http } from "@/util";
@@ -68,6 +69,23 @@ export const getTours = async (): Promise<getToursSuccess | getToursFail> => {
     return response;
   } catch (error) {
     const apiError = error as getToursFail;
+    return apiError;
+  }
+};
+
+export const markTourFinish = async (
+  id: string
+): Promise<markTourFinishSuccess | CreateTourFail> => {
+  try {
+    if (!id) return { error: "Missing tour ID", details: "Missing tour ID" };
+    const response = await http.request({
+      url: `tour/markTourFinish/${id}`,
+      method: "PUT",
+    });
+
+    return response;
+  } catch (error) {
+    const apiError = error as CreateTourFail;
     return apiError;
   }
 };

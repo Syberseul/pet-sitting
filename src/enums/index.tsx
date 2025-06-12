@@ -22,3 +22,9 @@ export enum DashboardView {
   "CALENDAR" = "calendar",
   "TIMELINE" = "timeline",
 }
+
+export enum TourStatus {
+  "PENDING" = 0,
+  "DELIVERED" = 1,
+  "FINISHED" = 2,
+}

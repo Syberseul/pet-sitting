@@ -1,10 +1,22 @@
-import { DogTourInfo, timelineTourInfo } from "@/Interface/dogTourInterface";
-import { Card, Spin, Timeline } from "antd";
+import {
+  DogTourInfo,
+  isMarkTourFinishSuccess,
+  timelineTourInfo,
+} from "@/Interface/dogTourInterface";
+
+import { Button, Card, Spin, Timeline } from "antd";
+
 import { useEffect, useState } from "react";
+
 import "../index.scss";
+
 import { _analyzeDogToursByTimeLine } from "../helper";
 
 import TimelineTourDetail from "./timelineTourDetail";
+
+import { TourStatus } from "@/enums";
+
+import { markTourFinish } from "@/APIs/dogTourApi";
 
 interface Props {
   isLoadingData: boolean;
@@ -18,6 +30,8 @@ function TimelineView(props: Props) {
   const [sortedTour, setSortedTour] = useState<timelineTourInfo[]>([]);
   const [detailedTour, setDetailedTour] = useState<DogTourInfo | null>(null);
 
+  const [isMarkingTourFinish, setIsMarkingTourFinish] = useState(false);
+
   useEffect(() => {
     if (!isLoadingData) {
       getDisplayData();
@@ -30,6 +44,19 @@ function TimelineView(props: Props) {
 
   const closeViewDogTourInfo = () => {
     setDetailedTour(null);
+  };
+
+  const handleMarkTourFinish = async (data: DogTourInfo) => {
+    setIsMarkingTourFinish(true);
+    setDetailedTour(data);
+
+    const res = await markTourFinish(data.uid);
+
+    setIsMarkingTourFinish(false);
+
+    setDetailedTour(null);
+
+    if (isMarkTourFinishSuccess(res)) refreshTour();
   };
 
   return isLoadingData ? (
@@ -56,14 +83,39 @@ function TimelineView(props: Props) {
               ...sortedTour.map((tour) => ({
                 label: tour.displayDate,
                 children: (
-                  <span
-                    onClick={() => {
-                      setDetailedTour(tour.tourInfo);
-                      console.log(tour.tourInfo);
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
                     }}
                   >
-                    {tour.tourInfo.dogName}
-                  </span>
+                    <span
+                      onClick={() => {
+                        setDetailedTour(tour.tourInfo);
+                      }}
+                    >
+                      {tour.tourInfo.dogName}
+                    </span>
+                    {tour.tourInfo.status !== TourStatus.FINISHED ? (
+                      <Button
+                        type="primary"
+                        loading={
+                          detailedTour && detailedTour.uid === tour.tourInfo.uid
+                            ? isMarkingTourFinish
+                            : false
+                        }
+                        onClick={() => handleMarkTourFinish(tour.tourInfo)}
+                      >
+                        Mark as Finish
+                      </Button>
+                    ) : (
+                      <Button color="danger" variant="outlined">
+                        Finished
+                      </Button>
+                    )}
+                  </div>
                 ),
                 dot: tour.icon ?? null,
               })),
