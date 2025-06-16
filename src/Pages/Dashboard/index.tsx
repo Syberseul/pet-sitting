@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { Button, Modal, Radio } from "antd";
@@ -10,7 +10,7 @@ import CalendarView from "./components/calendar";
 import { modifyDogOwner, setDogOwners } from "@/store/modules/dogOwnersStore";
 
 import { getDogOwners } from "@/APIs/dogOwnerApi";
-import { getTours } from "@/APIs/dogTourApi";
+import { extractFinishedTours, getTours } from "@/APIs/dogTourApi";
 
 import {
   DogTourInfo,
@@ -24,8 +24,12 @@ import {
 } from "@/Interface/dogOwnerInterface";
 
 import "./index.scss";
+
 import { DashboardView } from "@/enums";
+
 import TimelineView from "./components/timeline";
+
+import { exportDataAsCsv } from "@/util/helper";
 
 const initDogOwnerInfo: DogOwner = { name: "", dogs: [], isFromWx: false };
 
@@ -46,6 +50,9 @@ const Dashboard: React.FC = () => {
   const [dashboardView, setDashboardView] = useState<DashboardView>(
     DashboardView.CALENDAR
   );
+
+  const [isExtracting, setIsExtracting] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     fetchAllData();
@@ -103,6 +110,26 @@ const Dashboard: React.FC = () => {
     setOpenPopUp(false);
   };
 
+  const handleExtractAndDownload = async () => {
+    if (isExtracting) return;
+
+    setIsExtracting(true);
+
+    try {
+      const res = await extractFinishedTours();
+
+      if (isGetTourSuccess(res)) {
+        const successRes = res as getToursSuccess;
+        if (successRes.data.length) {
+          exportDataAsCsv(successRes.data, "tours_export");
+          refreshTour();
+        }
+      }
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -125,6 +152,17 @@ const Dashboard: React.FC = () => {
             loading={isLoadingDogOwners}
           >
             添加寄养
+          </Button>
+
+          <Button
+            ref={buttonRef}
+            type="default"
+            variant="outlined"
+            color="danger"
+            loading={isExtracting}
+            onClick={handleExtractAndDownload}
+          >
+            删除并备份已完成的寄养
           </Button>
         </div>
 

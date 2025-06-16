@@ -89,3 +89,19 @@ export const markTourFinish = async (
     return apiError;
   }
 };
+
+export const extractFinishedTours = async (): Promise<
+  getToursSuccess | CreateTourFail
+> => {
+  try {
+    const response = await http.request({
+      url: "tour/extractFinishedTours",
+      method: "POST",
+    });
+
+    return response;
+  } catch (error) {
+    const apiError = error as CreateTourFail;
+    return apiError;
+  }
+};
