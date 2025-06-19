@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Layout, Menu, Avatar, Space } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { TranslationOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 
 import type { MenuInfo } from "rc-menu/lib/interface";
 
 import "./index.scss";
+
 import { useUserState } from "@/util/customHooks";
+
 import { UserRole } from "@/enums";
+
+import ToggleLanguageButton from "@/Components/ToggleLanguageButton";
+import { useI18n } from "@/Context/languageContext";
 
 const { Header, Content, Footer } = Layout;
 
@@ -17,6 +22,8 @@ const App: React.FC = () => {
   const user = useUserState();
 
   const [selectedKey, setSelectedKey] = useState<string[]>([]);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -38,22 +45,22 @@ const App: React.FC = () => {
               ? "/dashboard"
               : "/introduction",
             label: [UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role)
-              ? "寄养信息"
-              : "首页",
+              ? t.indexPage
+              : t.introPage,
           },
           {
             key: "/owners",
-            label: "宠物主人",
+            label: t.ownersPage,
             hidden: ![UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role),
           },
           {
             key: "/users",
-            label: "用户管理",
+            label: t.usersPage,
             hidden: ![UserRole.ADMIN, UserRole.DEVELOPER].includes(user.role),
           },
           {
             key: "/tours",
-            label: "旅行信息",
+            label: t.toursPage,
             hidden: user.role !== UserRole.DOG_OWNER,
           },
         ]
@@ -95,9 +102,7 @@ const App: React.FC = () => {
           style={{ flex: 1, minWidth: 0 }}
           onClick={handleClickMenu}
         />
-        <TranslationOutlined
-          style={{ color: "#fff", cursor: "pointer", fontSize: "20px" }}
-        />
+        <ToggleLanguageButton />
       </Header>
       <Content style={{ padding: "0 48px", flex: 1, overflow: "auto" }}>
         <Outlet />

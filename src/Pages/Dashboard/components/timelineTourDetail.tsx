@@ -1,3 +1,4 @@
+import { useI18n } from "@/Context/languageContext";
 import { DogTourInfo } from "@/Interface/dogTourInterface";
 import { getDaysGap, getMaskedId } from "@/util/helper";
 import {
@@ -14,6 +15,8 @@ interface Props {
 
 function timelineTourDetail(props: Props) {
   const { tourInfo, closeViewDogTourInfo } = props;
+
+  const { t } = useI18n();
 
   const getDogName = (tourInfo: DogTourInfo) => {
     const { dogName, dogId } = tourInfo;
@@ -34,11 +37,11 @@ function timelineTourDetail(props: Props) {
       <Tag color={desex ? "green" : "volcano"}>
         {desex ? (
           <span>
-            <CheckOutlined /> 已绝育
+            <CheckOutlined /> {t.desex}
           </span>
         ) : (
           <span>
-            <CloseOutlined /> 未绝育
+            <CloseOutlined /> {t.nonDesex}
           </span>
         )}
       </Tag>
@@ -50,7 +53,7 @@ function timelineTourDetail(props: Props) {
     const totalDays = getDaysGap(startDate, endDate);
 
     return `${startDate} - ${endDate} (${totalDays} ${
-      totalDays > 1 ? "Days" : "Day"
+      totalDays > 1 ? t.days : t.day
     })`;
   };
 
@@ -61,7 +64,7 @@ function timelineTourDetail(props: Props) {
 
     const totalDays = getDaysGap(startDate, endDate);
 
-    return `$${totalDays * dailyPrice} ($${dailyPrice}/day)`;
+    return `$${totalDays * dailyPrice} ($${dailyPrice}/${t.day})`;
   };
 
   return (
@@ -82,7 +85,7 @@ function timelineTourDetail(props: Props) {
           }}
         >
           <p style={{ fontSize: "20px", fontWeight: "bold" }}>
-            Tour ID: {tourInfo.uid}
+            {t.tourId}: {tourInfo.uid}
           </p>
           <CloseCircleOutlined
             onClick={closeViewDogTourInfo}
@@ -102,8 +105,12 @@ function timelineTourDetail(props: Props) {
             {getDogName(tourInfo)} - {getDogType(tourInfo)}{" "}
             {getDesexTag(tourInfo)}
           </p>
-          <p>Tour period: {getTourPeriod(tourInfo)}</p>
-          <p>Total price (estimate): {getTotalEstimate(tourInfo)}</p>
+          <p>
+            {t.tourPeriod}: {getTourPeriod(tourInfo)}
+          </p>
+          <p>
+            {t.totalEstimatePrice}: {getTotalEstimate(tourInfo)}
+          </p>
         </section>
       </Card>
     </div>

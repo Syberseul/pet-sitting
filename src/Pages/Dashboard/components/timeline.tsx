@@ -17,6 +17,7 @@ import TimelineTourDetail from "./timelineTourDetail";
 import { TourStatus } from "@/enums";
 
 import { markTourFinish } from "@/APIs/dogTourApi";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   isLoadingData: boolean;
@@ -31,6 +32,8 @@ function TimelineView(props: Props) {
   const [detailedTour, setDetailedTour] = useState<DogTourInfo | null>(null);
 
   const [isMarkingTourFinish, setIsMarkingTourFinish] = useState(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!isLoadingData) {
@@ -108,11 +111,11 @@ function TimelineView(props: Props) {
                         }
                         onClick={() => handleMarkTourFinish(tour.tourInfo)}
                       >
-                        Mark as Finish
+                        {t.markAsFinish}
                       </Button>
                     ) : (
                       <Button color="danger" variant="outlined">
-                        Finished
+                        {t.tourFinished}
                       </Button>
                     )}
                   </div>

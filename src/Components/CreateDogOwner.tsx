@@ -13,6 +13,7 @@ import {
 import { createDogOwner } from "@/APIs/dogOwnerApi";
 import { useDispatch } from "react-redux";
 import { modifyDogOwner } from "@/store/modules/dogOwnersStore";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   afterCreate: (ownerInfo: DogOwner) => void;
@@ -65,6 +66,8 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
   const [dogList, setDogList] = useState<DogListInfo[]>([]);
 
   const [form] = Form.useForm();
+
+  const { t } = useI18n();
 
   const dispatch = useDispatch();
 
@@ -120,11 +123,11 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
   return (
     <>
       <Button type="primary" onClick={() => setOpenModal(true)}>
-        添加狗狗主人
+        {t.addDogOwner}
       </Button>
 
       <Modal
-        title={<p>主人信息：</p>}
+        title={<p>{t.ownerInfo + ":"}</p>}
         open={openModal}
         footer={
           <SubmitButton
@@ -133,7 +136,7 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
             dogList={dogList}
             isLoading={isCreating}
           >
-            提交
+            {t.submit}
           </SubmitButton>
         }
         onCancel={closeModal}
@@ -148,18 +151,18 @@ const CreateDogOwner: React.FC<Props> = ({ afterCreate }) => {
           component={false}
         >
           <Form.Item
-            label="姓名"
+            label={t.name}
             name="userName"
             rules={[{ required: true, message: "请输入姓名" }]}
           >
             <Input />
           </Form.Item>
 
-          <Form.Item label="联系方式" name="contactNo">
+          <Form.Item label={t.contactNo} name="contactNo">
             <Input />
           </Form.Item>
 
-          <Form.Item label="狗狗信息">
+          <Form.Item label={t.dogInfo}>
             <ModifyDogSection
               key={modalKey}
               display={Display.COLLAPSE}

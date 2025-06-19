@@ -1,4 +1,10 @@
-import { BreedInfo, DogInfo, DogInfoCreate } from "@/Interface/dogInterface";
+import { useI18n } from "@/Context/languageContext";
+import {
+  BreedInfo,
+  DogInfo,
+  DogInfoCreate,
+  DogSize,
+} from "@/Interface/dogInterface";
 
 import {
   DogStatus,
@@ -69,6 +75,8 @@ const DogSectionForm: React.FC<FormProps> = ({
   const [initFormData, setInitFormData] = useState(initCreateFormData);
 
   const [isFetchingImg, setIsFetchingImg] = useState(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     initDogInfo();
@@ -219,6 +227,15 @@ const DogSectionForm: React.FC<FormProps> = ({
     });
   };
 
+  const getDisplayDogSize = (size: DogSize): string => {
+    if (size === DogSize.X_SMALL) return t.dogSizeExtraSmall;
+    else if (size === DogSize.SMALL) return t.dogSizeSmall;
+    else if (size === DogSize.MEDIUM) return t.dogSizeMedium;
+    else if (size === DogSize.LARGE) return t.dogSizeLarge;
+    else if (size === DogSize.X_LARGE) return t.dogSizeExtraLarge;
+    else return "";
+  };
+
   return (
     <>
       <Form
@@ -231,7 +248,7 @@ const DogSectionForm: React.FC<FormProps> = ({
         initialValues={initFormData}
       >
         <Form.Item
-          label="犬种"
+          label={t.breed}
           name="breedType"
           rules={[{ required: true, message: "请选择犬种" }]}
         >
@@ -240,7 +257,7 @@ const DogSectionForm: React.FC<FormProps> = ({
             style={{ width: "100%" }}
             value={breed.name}
             dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
-            placeholder="选择犬种"
+            placeholder={t.selectBreed}
             allowClear
             treeDefaultExpandAll
             onChange={onBreedChange}
@@ -266,18 +283,18 @@ const DogSectionForm: React.FC<FormProps> = ({
                 paddingTop: "10px",
               }}
             />
-            <Button onClick={getDogInfo}>看其他</Button>
+            <Button onClick={getDogInfo}>{t.watchMore}</Button>
           </Form.Item>
         )}
         <Form.Item
-          label="狗狗名字"
+          label={t.dogName}
           name="dogName"
-          rules={[{ required: true, message: "请输入狗狗的名字!" }]}
+          rules={[{ required: true, message: t.enterDogName }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="体重">
+        <Form.Item label={t.weight}>
           <div
             style={{
               display: "flex",
@@ -292,13 +309,13 @@ const DogSectionForm: React.FC<FormProps> = ({
                 {
                   type: "number",
                   min: 0,
-                  message: "请输入有效的体重值",
+                  message: t.enterValidWeightNotice,
                 },
               ]}
             >
               <InputNumber min={0} onChange={handleAfterWeightChange} />
             </Form.Item>
-            <span>Kg</span>
+            <span>{t.weightUnit}</span>
           </div>
         </Form.Item>
 
@@ -314,7 +331,7 @@ const DogSectionForm: React.FC<FormProps> = ({
               {!dogStatus.isDogInWeightRange && (
                 <Alert
                   message={
-                    dogStatus.isDogOverWeight ? "狗狗有些超重！" : "狗狗有些瘦"
+                    dogStatus.isDogOverWeight ? t.overweight : t.underweight
                   }
                   type="warning"
                   showIcon
@@ -323,30 +340,30 @@ const DogSectionForm: React.FC<FormProps> = ({
               )}
               {breed.size && (
                 <Popover
-                  title={breed.size}
-                  content={`平均体重区间: ${breed.normalWeightRange.join(
-                    "Kg ~ "
-                  )}Kg`}
+                  title={getDisplayDogSize(breed.size)}
+                  content={`${t.avgWeightGap} ${breed.normalWeightRange.join(
+                    `${t.weightUnit} ~ `
+                  )}${t.weightUnit}`}
                 >
-                  <span>({breed.size})</span>
+                  <span>({getDisplayDogSize(breed.size)})</span>
                 </Popover>
               )}
             </div>
           </Form.Item>
         ) : null}
 
-        <Form.Item label="性别" name="sex">
+        <Form.Item label={t.sex} name="sex">
           <Radio.Group>
-            <Radio.Button value={1}>Male</Radio.Button>
-            <Radio.Button value={0}>Unknown</Radio.Button>
-            <Radio.Button value={2}>Female</Radio.Button>
+            <Radio.Button value={1}>{t.genderMale}</Radio.Button>
+            <Radio.Button value={0}>{t.genderUnknown}</Radio.Button>
+            <Radio.Button value={2}>{t.genderFemale}</Radio.Button>
           </Radio.Group>
         </Form.Item>
 
-        <Form.Item label="绝育状态" name="desex">
+        <Form.Item label={t.desexStatus} name="desex">
           <Radio.Group>
-            <Radio.Button value={false}>未绝育</Radio.Button>
-            <Radio.Button value={true}>已绝育</Radio.Button>
+            <Radio.Button value={false}>{t.nonDesex}</Radio.Button>
+            <Radio.Button value={true}>{t.desex}</Radio.Button>
           </Radio.Group>
         </Form.Item>
 
@@ -368,7 +385,7 @@ const DogSectionForm: React.FC<FormProps> = ({
               }}
               isModifyingDog={isModifyingDog}
             >
-              {isEdit ? "修改" : "添加"}
+              {isEdit ? t.edit : t.add}
             </SubmitButton>
           </Space>
         </Form.Item>

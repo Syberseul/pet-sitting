@@ -2,6 +2,7 @@ import { DogInfo } from "@/Interface/dogInterface";
 import { Modal } from "antd";
 import DogSectionForm from "./DogSectionForm";
 import { DogOwner } from "@/Interface/dogOwnerInterface";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   isModalOpen: boolean;
@@ -22,9 +23,11 @@ function ModifyDogModal(props: Props) {
     isModifyingDog,
   } = props;
 
+  const { t } = useI18n();
+
   return isModalOpen ? (
     <Modal
-      title={dogInfo.uid ? "修改狗狗信息" : "添加狗狗"}
+      title={dogInfo.uid ? t.editDog : t.addDog}
       open={isModalOpen}
       footer={null}
       onCancel={closeModal}

@@ -5,6 +5,7 @@ import EditDogOwner from "@/Components/EditDogOwner";
 
 import LoadingList from "@/Components/LoadingList";
 import ModifyDogModal from "@/Components/ModifyDogModal";
+import { useI18n } from "@/Context/languageContext";
 
 import { DogInfo, DogInfoCreate } from "@/Interface/dogInterface";
 
@@ -35,25 +36,27 @@ function DogOwnerList() {
   const [isEditDogModalOpen, setIsEditDogModalOpen] = useState(false);
   const [isModifyingDog, setIsModifyingDog] = useState(false);
 
+  const { t } = useI18n();
+
   useEffect(() => {
     loadDogOwners();
   }, []);
 
   const columns: TableColumnsType<DogOwner> = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "ID", dataIndex: "uid", key: "uid" },
+    { title: t.name, dataIndex: "name", key: "name" },
+    { title: t.id, dataIndex: "uid", key: "uid" },
     {
-      title: "Contact No.",
+      title: t.contactNo,
       dataIndex: "contactNo",
       key: "contactNo",
       render: (text) => (text ? text : "-"),
     },
     {
-      title: "Actions",
+      title: t.actions,
       key: "actions",
       render: (_, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <Tooltip placement="left" title={"Add Dog"} color="green">
+          <Tooltip placement="left" title={t.addDog} color="green">
             <PlusOutlined
               style={{ cursor: "pointer", color: "green" }}
               onClick={() => {
@@ -73,7 +76,7 @@ function DogOwnerList() {
               }}
             />
           </Tooltip>
-          <Tooltip placement="left" title={"Edit Dog Owner"} color="blue">
+          <Tooltip placement="left" title={t.editDogOwner} color="blue">
             <EditOutlined
               style={{ cursor: "pointer", color: "blue" }}
               onClick={() => {
@@ -83,10 +86,10 @@ function DogOwnerList() {
             />
           </Tooltip>
 
-          <Tooltip placement="left" title={"Remove Dog Owner"} color="red">
+          <Tooltip placement="left" title={t.removeDogOwner} color="red">
             <Popconfirm
-              title="删除狗狗主人"
-              description="你确定要删除这个狗狗主人么?"
+              title={t.removeDogOwner}
+              description={t.confirmRemoveDogOwnerText}
               onConfirm={(e) => handleRemoveDogOwner(e, record as DogOwner)}
             >
               <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
@@ -100,36 +103,36 @@ function DogOwnerList() {
   const expandedColumns = (
     owner: DogOwner
   ): TableColumnsType<DogInfo | DogInfoCreate> => [
-    { title: "Dog Name", dataIndex: "dogName", key: "dogName" },
+    { title: t.dogName, dataIndex: "dogName", key: "dogName" },
     {
-      title: "Breed",
+      title: t.breed,
       dataIndex: "breedType",
       key: "breedType",
       render: (text, dog) => `${text} (${dog.breedName})`,
     },
     {
-      title: "Sex",
+      title: t.sex,
       dataIndex: "sex",
       key: "sex",
       render: (text, dog) => {
-        const gender = text == 0 ? "Female" : "Male";
-        const desex = dog.desex ? "已绝育" : "未绝育";
+        const gender = text == 0 ? t.genderFemale : t.genderMale;
+        const desex = dog.desex ? t.desex : t.nonDesex;
 
         return `${gender} (${desex})`;
       },
     },
     {
-      title: "Weight (kg)",
+      title: `${t.weight} (${t.weightUnit})`,
       dataIndex: "weight",
       key: "weight",
-      render: (text) => (text ? `${text} kg` : "-"),
+      render: (text) => (text ? `${text} ${t.weightUnit}` : "-"),
     },
     {
-      title: "Actions",
+      title: t.actions,
       key: "actions",
       render: (_, record) => (
         <div style={{ display: "flex", gap: "10px" }}>
-          <Tooltip placement="left" title={"Edit Dog"} color="blue">
+          <Tooltip placement="left" title={t.editDog} color="blue">
             <EditOutlined
               style={{ cursor: "pointer", color: "blue" }}
               onClick={() => {
@@ -140,11 +143,13 @@ function DogOwnerList() {
             />
           </Tooltip>
 
-          <Tooltip placement="left" title={"Remove Dog"} color="red">
+          <Tooltip placement="left" title={t.removeDog} color="red">
             <Popconfirm
-              title="删除狗狗"
-              description="你确定要删除这个狗狗么?"
+              title={t.removeDog}
+              description={t.confirmRemoveDogText}
               onConfirm={(e) => handleRemoveDog(e, record as DogInfo)}
+              cancelText={t.cancel}
+              okText={t.delete}
             >
               <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
             </Popconfirm>

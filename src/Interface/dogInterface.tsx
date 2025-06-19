@@ -7,7 +7,7 @@ export interface BreedInfo {
 }
 
 export enum DogSize {
-  X_SMALL = "超小型犬",
+  X_SMALL = "X_SMALL",
   SMALL = "小型犬",
   MEDIUM = "中型犬",
   LARGE = "大型犬",

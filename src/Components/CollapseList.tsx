@@ -20,6 +20,7 @@ import {
 import EditDogTour from "./EditDogTour";
 import { deleteTour, markTourFinish } from "@/APIs/dogTourApi";
 import { TourStatus } from "@/enums";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   data: DailyDataStructure;
@@ -53,6 +54,8 @@ function CollapseList({ data, afterModify }: Props) {
   const [tourInfo, setTourInfo] = useState<DogTourInfo>(initDogTourInfo);
 
   const [isMarkingTourFinish, setIsMarkingTourFinish] = useState(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     modifyList(data);
@@ -128,11 +131,11 @@ function CollapseList({ data, afterModify }: Props) {
               onClick={() => handleClickEditIcon(data)}
             />
             <Popconfirm
-              title="删除寄养"
-              description="确定删除本次寄养？"
+              title={t.deleteTourTitle}
+              description={t.confirmDeleteTour}
               onConfirm={() => handleClickRemoveIcon(data)}
-              okText="删除"
-              cancelText="暂时不"
+              okText={t.delete}
+              cancelText={t.notNow}
             >
               <DeleteOutlined style={{ cursor: "pointer" }} />
             </Popconfirm>
@@ -142,11 +145,11 @@ function CollapseList({ data, afterModify }: Props) {
                 loading={isMarkingTourFinish}
                 onClick={() => handleMarkTourFinish(data)}
               >
-                Mark tour finish
+                {t.markAsFinish}
               </Button>
             ) : (
               <Button color="danger" variant="outlined">
-                Finished
+                {t.tourFinished}
               </Button>
             )}
           </div>
@@ -158,7 +161,7 @@ function CollapseList({ data, afterModify }: Props) {
 
     res.push({
       key: "Total",
-      label: `总览 (${total.length})`,
+      label: `${t.generalView} (${total.length})`,
       children: (
         <>
           {total.map((dog) => (
@@ -180,7 +183,7 @@ function CollapseList({ data, afterModify }: Props) {
     newComing.length &&
       res.push({
         key: "newComing",
-        label: `新狗狗 (${newComing.length})`,
+        label: `${t.newTourAmount} (${newComing.length})`,
         children: (
           <>
             {newComing.map((dog) => (
@@ -202,7 +205,7 @@ function CollapseList({ data, afterModify }: Props) {
     leaving.length &&
       res.push({
         key: "leaving",
-        label: `接走 (${leaving.length})`,
+        label: `${t.finishTourAmount} (${leaving.length})`,
         children: (
           <>
             {leaving.map((dog) => (

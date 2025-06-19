@@ -130,7 +130,12 @@ const findCommonChineseSuffix = (names: string[]): string | null => {
 
 export const getBreedInfo = (
   nameOrKey: string
-): (BreedInfo & { size?: DogSize; dailyPrice?: number }) | undefined => {
+):
+  | (BreedInfo & {
+      size?: DogSize;
+      dailyPrice?: number;
+    })
+  | undefined => {
   // 先尝试作为key查找
   let breedInfo: BreedInfo | undefined;
   let searchName: string | undefined;

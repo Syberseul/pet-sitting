@@ -8,6 +8,7 @@ import DogTourDetails from "./DogTourDetails";
 import { Button, Modal } from "antd";
 import { DogInfo } from "@/Interface/dogInterface";
 import { updateTour } from "@/APIs/dogTourApi";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   isModalOpen: boolean;
@@ -39,6 +40,8 @@ const EditDogTour: React.FC<Props> = ({
   const [isUpdatingTour, setIsUpdatingTour] = useState<boolean>(false);
   const [dog, setDog] = useState<DogInfo>(initDogInfo);
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -94,19 +97,19 @@ const EditDogTour: React.FC<Props> = ({
 
   return (
     <Modal
-      title="修改寄养"
+      title={t.editTour}
       open={isModalOpen}
       onCancel={handleClose}
       footer={
         <>
-          <Button onClick={handleClose}>取消</Button>
+          <Button onClick={handleClose}>{t.cancel}</Button>
           <Button
             onClick={handleModifyTour}
             type="primary"
             disabled={submitBtnDisabled || isUpdatingTour}
             loading={isUpdatingTour}
           >
-            {isUpdatingTour ? "更新中" : "更新"}
+            {isUpdatingTour ? t.updating : t.update}
           </Button>
         </>
       }

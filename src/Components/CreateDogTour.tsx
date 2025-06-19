@@ -18,6 +18,7 @@ import {
 import React, { useEffect, useState } from "react";
 import DogTourDetails from "./DogTourDetails";
 import { createTour } from "@/APIs/dogTourApi";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   isModalOpen: boolean;
@@ -48,6 +49,8 @@ const CreateDogTour: React.FC<Props> = ({
   >();
   const [submitBtnDisabled, setSubmitBtnDisabled] = useState<boolean>(true);
   const [isCreatingTour, setIsCreatingTour] = useState<boolean>(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -157,19 +160,19 @@ const CreateDogTour: React.FC<Props> = ({
 
   return (
     <Modal
-      title="添加寄养"
+      title={t.addTour}
       open={isModalOpen}
       onCancel={handleClose}
       footer={
         <>
-          <Button onClick={handleClose}>取消</Button>
+          <Button onClick={handleClose}>{t.cancel}</Button>
           <Button
             onClick={handleAddTour}
             type="primary"
             disabled={submitBtnDisabled || isCreatingTour}
             loading={isCreatingTour}
           >
-            {isCreatingTour ? "创建中" : "添加"}
+            {isCreatingTour ? t.creating : t.add}
           </Button>
         </>
       }
@@ -185,7 +188,9 @@ const CreateDogTour: React.FC<Props> = ({
       >
         {isFixedOwner ? (
           <>
-            <p>寄养主人：{owner.name}</p>
+            <p>
+              {t.dogOwner} {owner.name}
+            </p>
           </>
         ) : (
           <>
@@ -197,10 +202,10 @@ const CreateDogTour: React.FC<Props> = ({
                   alignItems: "center",
                 }}
               >
-                <p style={{ width: "80px" }}>寄养者:</p>
+                <p style={{ width: "80px" }}>{t.dogOwner}</p>
                 <Select
                   showSearch
-                  placeholder="选择一位寄养者"
+                  placeholder={t.selectDogOwner}
                   filterOption={(input, option) =>
                     (option?.label ?? "")
                       .toLowerCase()
@@ -210,7 +215,7 @@ const CreateDogTour: React.FC<Props> = ({
                   options={ownerList.map((owner) => ({
                     ...owner,
                     value: owner.uid,
-                    label: owner.name ?? "匿名",
+                    label: owner.name ?? t.anonymous,
                   }))}
                   value={owner.uid}
                   style={{
@@ -220,7 +225,7 @@ const CreateDogTour: React.FC<Props> = ({
                 />
               </div>
             ) : (
-              "还没有寄养者"
+              t.noSelectedOwner
             )}
           </>
         )}
@@ -246,12 +251,12 @@ const CreateDogTour: React.FC<Props> = ({
                   onChange={() => setAllToursInSamePeriod((prev) => !prev)}
                   checked={allToursInSamePeriod}
                 >
-                  同时寄取
+                  {t.sameTourDate}
                 </Checkbox>
 
                 {allToursInSamePeriod && (
                   <RangePicker
-                    placeholder={["起始时间", "结束时间"]}
+                    placeholder={[t.startDate, t.endDate]}
                     onChange={handleDateRangeSelect}
                   />
                 )}

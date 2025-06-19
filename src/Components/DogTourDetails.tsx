@@ -1,3 +1,4 @@
+import { useI18n } from "@/Context/languageContext";
 import { BreedInfo, DogInfo, DogTourList } from "@/Interface/dogInterface";
 import { DogTourInfo, NewDogTourInfo } from "@/Interface/dogTourInterface";
 import { getBreedInfo } from "@/util/breedMap";
@@ -56,6 +57,8 @@ const DogTourDetails: React.FC<Props> = ({
     dogTour.startDate ? dayjs(dogTour.startDate) : null,
     dogTour.endDate ? dayjs(dogTour.endDate) : null,
   ]);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     const info = getBreedInfo(dogInfo.breedName);
@@ -174,22 +177,22 @@ const DogTourDetails: React.FC<Props> = ({
           }}
           disabled={!dogInfo.alive}
         >
-          {dogTour.checked ? "移除本次寄养" : "添加本次寄养"}
+          {dogTour.checked ? t.removeFromTour : t.includeInTour}
         </Button>
       </div>
 
       <div style={{ display: "flex", columnGap: "10px", alignItems: "center" }}>
-        <p style={{ width: "90px" }}>狗狗名字：</p>
+        <p style={{ width: "90px" }}>{t.dogName}: </p>
         <p>
-          {dogInfo.dogName} ({breedInfo.name}) - 体重 (
-          {dogInfo.weight ? `${dogInfo.weight} kg` : "未知"})
+          {dogInfo.dogName} ({breedInfo.name}) - {t.weight} (
+          {dogInfo.weight ? `${dogInfo.weight} ${t.weightUnit}` : t.unknown})
         </p>
       </div>
 
       <div style={{ display: "flex", columnGap: "10px", alignItems: "center" }}>
-        <p style={{ width: "90px" }}>接送日期：</p>
+        <p style={{ width: "90px" }}>{t.dateRange}: </p>
         <RangePicker
-          placeholder={["起始时间", "结束时间"]}
+          placeholder={[t.startDate, t.endDate]}
           onChange={handleDateRangeSelect}
           value={selectedRange}
           disabled={allToursInSamePeriod || !dogInfo.alive}
@@ -197,7 +200,7 @@ const DogTourDetails: React.FC<Props> = ({
       </div>
 
       <div style={{ display: "flex", columnGap: "10px", alignItems: "center" }}>
-        <p style={{ width: "90px" }}>单日寄养费：</p>
+        <p style={{ width: "90px" }}>{t.dailyFee}: </p>
         <InputNumber
           addonAfter="$"
           defaultValue={breedInfo.dailyPrice}
@@ -209,7 +212,7 @@ const DogTourDetails: React.FC<Props> = ({
 
       {dogTour.notes.length ? (
         <div style={{ lineHeight: "15px" }}>
-          <p>备忘录：</p>
+          <p>{t.notes}:</p>
           {dogTour.notes.map((note, index) => (
             <div
               style={{
@@ -223,13 +226,14 @@ const DogTourDetails: React.FC<Props> = ({
             >
               <p>{note}</p>
               <Popconfirm
-                title="删除备忘录"
-                description="你确定要删除这条备忘录吗？"
+                title={t.removeNote}
+                description={t.confirmRemoveNote}
                 onConfirm={(e) => {
                   e?.stopPropagation();
                   e?.preventDefault();
                   handleRemoveNote(index);
                 }}
+                okText={t.delete}
               >
                 <DeleteOutlined />
               </Popconfirm>
@@ -237,7 +241,7 @@ const DogTourDetails: React.FC<Props> = ({
           ))}
         </div>
       ) : (
-        <p>未添加备忘录，在下面输入内容并添加</p>
+        <p>{t.noNotesText}</p>
       )}
 
       <div
@@ -249,7 +253,7 @@ const DogTourDetails: React.FC<Props> = ({
         }}
       >
         <Input
-          placeholder="输入备忘录内容..."
+          placeholder={t.addNotePlaceholder}
           onChange={handleChangeNote}
           value={note}
           disabled={!dogInfo.alive}
@@ -259,7 +263,7 @@ const DogTourDetails: React.FC<Props> = ({
           onClick={handleAddNote}
           disabled={!dogInfo.alive}
         >
-          添加备忘录
+          {t.addNote}
         </Button>
       </div>
     </div>

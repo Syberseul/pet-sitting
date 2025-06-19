@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { formItemLayout, validateMessages } from "./utilConsts/authForm";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
+import { useI18n } from "@/Context/languageContext";
 
 function SingUp(props: Props) {
   const { toggleShowSignUp } = props;
@@ -26,6 +27,8 @@ function SingUp(props: Props) {
   const [form] = Form.useForm();
 
   const [clientReady, setClientReady] = useState<boolean>(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     setClientReady(true);
@@ -69,13 +72,13 @@ function SingUp(props: Props) {
       style={{ maxWidth: 600 }}
       validateMessages={validateMessages}
     >
-      <Form.Item name={["user", "userName"]} label="用户名">
+      <Form.Item name={["user", "userName"]} label={t.userName}>
         <Input />
       </Form.Item>
 
       <Form.Item
         name={["user", "email"]}
-        label="邮箱"
+        label={t.email}
         rules={[{ type: "email", required: true }]}
       >
         <Input type="email" />
@@ -83,7 +86,7 @@ function SingUp(props: Props) {
 
       <Form.Item
         name={["user", "password"]}
-        label="密码"
+        label={t.password}
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -91,7 +94,7 @@ function SingUp(props: Props) {
 
       <Form.Item
         name={["user", "confirmPassword"]}
-        label="确认密码"
+        label={t.confirmPassword}
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -110,10 +113,10 @@ function SingUp(props: Props) {
             }
             loading={isSigningUp}
           >
-            创建
+            {t.create}
           </Button>
           <p>
-            或者{" "}
+            {t.or + " "}
             <span
               style={{
                 textDecoration: "underline",
@@ -122,7 +125,7 @@ function SingUp(props: Props) {
               }}
               onClick={toggleShowSignUp}
             >
-              通过邮箱登录
+              {t.loginViaEmail}
             </span>
           </p>
         </>
@@ -131,7 +134,7 @@ function SingUp(props: Props) {
       {signUpFailed.showSignUpFailed && (
         <Alert
           message={signUpFailed.errMsg}
-          description="Sign"
+          description={t.createUserFailMsg}
           type="error"
           showIcon
           closable

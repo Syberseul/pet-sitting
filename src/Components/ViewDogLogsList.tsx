@@ -2,6 +2,7 @@ import { DailyDataStructure } from "@/Interface/dashboardInterface";
 import { Button, Modal } from "antd";
 import { useState } from "react";
 import CollapseList from "./CollapseList";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   data: DailyDataStructure;
@@ -10,6 +11,8 @@ interface Props {
 
 function ViewDogLogsList(props: Props) {
   const { data, afterModify } = props;
+
+  const { t } = useI18n();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -24,10 +27,10 @@ function ViewDogLogsList(props: Props) {
   return (
     <>
       <Button type="primary" size="small" onClick={showModal}>
-        查看
+        {t.view}
       </Button>
       <Modal
-        title="详情"
+        title={t.details}
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}

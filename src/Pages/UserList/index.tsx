@@ -13,6 +13,7 @@ import {
 import LoadingList from "@/Components/LoadingList";
 
 import { UserRole } from "@/enums";
+import { useI18n } from "@/Context/languageContext";
 
 interface UserData {
   email: string;
@@ -34,6 +35,8 @@ function UserList() {
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     loadUsers();
@@ -176,35 +179,35 @@ function UserList() {
 
   const columns: TableColumnsType<UserData> = [
     {
-      title: "Email",
+      title: t.email,
       dataIndex: "email",
       key: "email",
       render: (text) => <a href={`mailto:${text}`}>{text}</a>,
     },
     {
-      title: "ID",
+      title: t.id,
       dataIndex: "id",
       key: "id",
     },
     {
-      title: "UserName",
+      title: t.userName,
       dataIndex: "userName",
       key: "userName",
       render: (text) => <p>{text ? text : "-"}</p>,
     },
     {
-      title: "Role",
+      title: t.role,
       dataIndex: "role",
       key: "role",
       render: (text, record) => getRoleTag(text, record),
     },
     {
-      title: "Mobile Devices",
+      title: t.mobileDevices,
       dataIndex: "validFcmTokens",
       key: "validFcmTokens",
     },
     {
-      title: "Receive Notifications",
+      title: t.receiveNotifications,
       dataIndex: "receiveNotifications",
       key: "receiveNotifications",
       render: (text, record) => getReceiveNotificationsToggle(text, record),
@@ -222,17 +225,17 @@ function UserList() {
   };
 
   const getRoleTagText = (role: number) => {
-    let tag = "VISITOR";
+    let tag = t.visitor;
 
     switch (role) {
       case 100:
-        tag = "ADMIN";
+        tag = t.admin;
         break;
       case 90:
-        tag = "DEVELOPER";
+        tag = t.developer;
         break;
       case 10:
-        tag = "DOG OWNER";
+        tag = t.dogOwner;
         break;
       case 0:
       default:
@@ -266,7 +269,7 @@ function UserList() {
     <>
       <ListTable data={users} />
       <Modal
-        title="修改用户身份"
+        title={t.editUserRole}
         closable={{ "aria-label": "Custom Close Button" }}
         open={showChangeRolePopup}
         onOk={handleConfirmChangeUserRole}
@@ -277,13 +280,22 @@ function UserList() {
         cancelButtonProps={{
           loading: isUpdatingUser,
         }}
+        cancelText={t.cancel}
+        okText={t.ok}
       >
         <p>
-          确定要将用户的身份从 {getRoleTagText(selectedUser?.role!)} 更改为{" "}
-          {getRoleTagText(selectedRole!)} 吗？
+          {t.confirmChangeRolePreText +
+            " " +
+            getRoleTagText(selectedUser?.role!) +
+            " " +
+            t.confirmChangeRoleMidText +
+            " " +
+            getRoleTagText(selectedRole!) +
+            " " +
+            t.confirmChangeRoleEndText}
         </p>
 
-        <p>请注意：变更用户身份有可能会导致用户权限发生更改！</p>
+        <p>{t.confirmChangeRoleNoticeText}</p>
       </Modal>
     </>
   );

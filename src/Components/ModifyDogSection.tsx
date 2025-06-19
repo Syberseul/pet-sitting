@@ -26,6 +26,7 @@ const defaultDogInfoCreate: DogInfoCreate = {
 import { DeleteOutlined } from "@ant-design/icons";
 
 import DogSectionForm from "./DogSectionForm";
+import { useI18n } from "@/Context/languageContext";
 
 const ModifyDogSection: React.FC<Props> = ({
   display,
@@ -37,6 +38,8 @@ const ModifyDogSection: React.FC<Props> = ({
   const [showAddSection, setShowAddSection] = useState<boolean>(false);
   const [_dogInfoCreate, setDogInfoCreate] =
     useState<DogInfoCreate>(defaultDogInfoCreate);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (addedDogList?.length && !dogList.length) {
@@ -53,13 +56,17 @@ const ModifyDogSection: React.FC<Props> = ({
             }}
           >
             <p>{dog.breedType}</p>
-            {dog.weight ? <p>{dog.weight} kg</p> : null}
+            {dog.weight ? (
+              <p>
+                {dog.weight} {t.weightUnit}
+              </p>
+            ) : null}
           </div>
         ),
         extra: (
           <Popconfirm
-            title="删除狗狗"
-            description="你确定要删除这个狗狗么?"
+            title={t.removeDog}
+            description={t.confirmRemoveDogText}
             onConfirm={(e) => {
               e?.stopPropagation();
               e?.preventDefault();
@@ -108,8 +115,8 @@ const ModifyDogSection: React.FC<Props> = ({
       ),
       extra: (
         <Popconfirm
-          title="删除狗狗"
-          description="你确定要删除这个狗狗么?"
+          title={t.removeDog}
+          description={t.confirmRemoveDogText}
           onConfirm={(e) => {
             e?.stopPropagation();
             e?.preventDefault();
@@ -139,7 +146,7 @@ const ModifyDogSection: React.FC<Props> = ({
     "form"
   ) : display == Display.COLLAPSE ? (
     <>
-      <Button onClick={handleAddDog}>添加狗狗</Button>
+      <Button onClick={handleAddDog}>{t.addDog}</Button>
 
       {showAddSection ? <DogSectionForm onSave={handleFinishAddDog} /> : null}
 

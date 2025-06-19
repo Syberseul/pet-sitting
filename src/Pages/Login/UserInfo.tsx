@@ -1,3 +1,4 @@
+import { useI18n } from "@/Context/languageContext";
 import { UserRole } from "@/enums";
 import { userLogout } from "@/store/modules/userStore";
 import { useUserState } from "@/util/customHooks";
@@ -8,6 +9,8 @@ function UserInfo() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { t } = useI18n();
+
   const user = useUserState();
 
   const handleLogout = () => {
@@ -17,8 +20,12 @@ function UserInfo() {
 
   return (
     <>
-      <div>User name: {user.userName}</div>
-      <div>Email: {user.email}</div>
+      <div>
+        {t.userName}: {user.userName}
+      </div>
+      <div>
+        {t.email}: {user.email}
+      </div>
       {user.role == UserRole.DOG_OWNER ? (
         <div>Show dog owner dogs in a list</div>
       ) : user.role == UserRole.ADMIN || user.role == UserRole.DEVELOPER ? (
@@ -34,7 +41,7 @@ function UserInfo() {
         }}
         onClick={handleLogout}
       >
-        Log out
+        {t.signOut}
       </span>
     </>
   );

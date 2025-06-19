@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { formItemLayout, validateMessages } from "./utilConsts/authForm";
 import { userLogin } from "@/store/modules/userStore";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
+import { useI18n } from "@/Context/languageContext";
 
 function Login(props: Props) {
   const { toggleShowSignUp } = props;
@@ -27,6 +28,8 @@ function Login(props: Props) {
   const [form] = Form.useForm();
 
   const [clientReady, setClientReady] = useState<boolean>(false);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     setClientReady(true);
@@ -72,7 +75,7 @@ function Login(props: Props) {
     >
       <Form.Item
         name={["user", "email"]}
-        label="邮箱"
+        label={t.email}
         rules={[{ type: "email", required: true }]}
       >
         <Input type="email" />
@@ -80,7 +83,7 @@ function Login(props: Props) {
 
       <Form.Item
         name={["user", "password"]}
-        label="密码"
+        label={t.password}
         rules={[{ required: true }]}
       >
         <Input type="password" />
@@ -99,10 +102,10 @@ function Login(props: Props) {
             }
             loading={isLogingIn}
           >
-            登录
+            {t.signIn}
           </Button>
           <p>
-            或者{" "}
+            {t.or + " "}
             <span
               style={{
                 textDecoration: "underline",
@@ -111,7 +114,7 @@ function Login(props: Props) {
               }}
               onClick={toggleShowSignUp}
             >
-              创建新用户
+              {t.createNewUser}
             </span>
           </p>
         </>
@@ -120,7 +123,7 @@ function Login(props: Props) {
       {signUpFailed.showSignUpFailed && (
         <Alert
           message={signUpFailed.errMsg}
-          description="Sign"
+          description={t.loginFailMsg}
           type="error"
           showIcon
           closable

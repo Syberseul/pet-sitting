@@ -1,6 +1,7 @@
 import { Calendar, CalendarProps, ConfigProvider, Spin } from "antd";
 
 import zhCN from "antd/es/locale/zh_CN";
+import enUS from "antd/es/locale/en_US";
 
 import { Dayjs } from "dayjs";
 
@@ -11,6 +12,8 @@ import { DogTourInfo } from "@/Interface/dogTourInterface";
 import ViewDogLogsList from "@/Components/ViewDogLogsList";
 
 import { _analyzeDogToursByDate, _analyzeDogToursByMonth } from "../helper";
+import { useI18n } from "@/Context/languageContext";
+import { useEffect, useState } from "react";
 
 interface Props {
   isLoadingData: boolean;
@@ -20,6 +23,13 @@ interface Props {
 
 function CalendarView(props: Props) {
   const { isLoadingData, tours, refreshTour } = props;
+  const [calendarLanguage, setCalendarLanguage] = useState(zhCN);
+
+  const { t, language } = useI18n();
+
+  useEffect(() => {
+    setCalendarLanguage(language === "en" ? enUS : zhCN);
+  }, [language]);
 
   const cellRender: CalendarProps<Dayjs>["cellRender"] = (current, info) => {
     if (info.type === "date") return dateCellRender(current);
@@ -40,7 +50,7 @@ function CalendarView(props: Props) {
     return (
       <>
         {isLoadingData ? (
-          <Spin size="small">加载中</Spin>
+          <Spin size="small">{t.loading}</Spin>
         ) : (
           <>
             {activeCount || startingCount || endingCount ? (
@@ -53,24 +63,23 @@ function CalendarView(props: Props) {
               >
                 <div>
                   <section>
-                    狗狗数量：
-                    {getDogDisplayNumber(listData)}
+                    {t.dogAmount}:{getDogDisplayNumber(listData)}
                   </section>
                   {listData.startingCount ? (
                     <section style={{ color: "#dd3" }}>
-                      新增：{listData.startingCount}
+                      {t.newTourAmount}: {listData.startingCount}
                     </section>
                   ) : null}
                   {listData.endingCount ? (
                     <section style={{ color: "#f00" }}>
-                      接走：{listData.endingCount}
+                      {t.finishTourAmount}: {listData.endingCount}
                     </section>
                   ) : null}
                 </div>
                 <ViewDogLogsList data={listData} afterModify={refreshTour} />
               </div>
             ) : (
-              <section>没有狗狗...</section>
+              <section>{t.noTourText}</section>
             )}
           </>
         )}
@@ -86,7 +95,7 @@ function CalendarView(props: Props) {
     return (
       <>
         {isLoadingData ? (
-          <Spin size="small">加载中...</Spin>
+          <Spin size="small">{t.loading}...</Spin>
         ) : (
           <div
             className="notes-month"
@@ -106,11 +115,11 @@ function CalendarView(props: Props) {
                   }}
                 >
                   <section>
-                    本月峰值：
+                    {t.monthlyMax}:
                     <span style={{ color: "#fa0" }}>{res.highest}</span>
                   </section>
                   <section>
-                    本月低谷：
+                    {t.monthlyMin}:
                     <span style={{ color: "#6ff" }}>{res.lowest}</span>
                   </section>
                 </div>
@@ -123,11 +132,11 @@ function CalendarView(props: Props) {
                     }}
                   >
                     <section>
-                      本月新狗狗：
+                      {t.monthlyNewTours}:
                       <span style={{ color: "#dd3" }}>{res.newDog}</span>
                     </section>
                     <section>
-                      本月送走狗狗：
+                      {t.monthlyFinishTours}:
                       <span style={{ color: "#f00" }}>{res.leftDog}</span>
                     </section>
                   </div>
@@ -136,7 +145,7 @@ function CalendarView(props: Props) {
                 )}
               </>
             ) : (
-              <section>没有狗狗...</section>
+              <section>{t.noTourText}</section>
             )}
           </div>
         )}
@@ -164,7 +173,7 @@ function CalendarView(props: Props) {
   };
 
   return (
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider locale={calendarLanguage}>
       <Calendar cellRender={cellRender} />
     </ConfigProvider>
   );

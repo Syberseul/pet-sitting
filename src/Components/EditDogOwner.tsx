@@ -11,6 +11,7 @@ import { Display } from "@/enums";
 import { updateDogOwner } from "@/APIs/dogOwnerApi";
 import { useDispatch } from "react-redux";
 import { modifyDogOwner } from "@/store/modules/dogOwnersStore";
+import { useI18n } from "@/Context/languageContext";
 
 interface Props {
   isModalOpen: boolean;
@@ -69,6 +70,8 @@ function EditDogOwner(props: Props) {
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
+
+  const { t } = useI18n();
 
   useEffect(() => {
     initData();
@@ -133,7 +136,7 @@ function EditDogOwner(props: Props) {
 
   return (
     <Modal
-      title={<p>主人信息：</p>}
+      title={<p>{t.ownerInfo}</p>}
       open={isModalOpen}
       onCancel={closeEditModal}
       footer={
@@ -143,7 +146,7 @@ function EditDogOwner(props: Props) {
           dogList={dogsList}
           isLoading={isUpdating}
         >
-          更新
+          {t.update}
         </SubmitButton>
       }
     >
@@ -160,18 +163,18 @@ function EditDogOwner(props: Props) {
         }}
       >
         <Form.Item
-          label="姓名"
+          label={t.name}
           name="userName"
-          rules={[{ required: true, message: "请输入姓名" }]}
+          rules={[{ required: true, message: t.enterNameText }]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="联系方式" name="contactNo">
+        <Form.Item label={t.contactNo} name="contactNo">
           <Input />
         </Form.Item>
 
-        <Form.Item label="狗狗信息">
+        <Form.Item label={t.dogInfo}>
           {dataInit ? (
             <ModifyDogSection
               key={modalKey}

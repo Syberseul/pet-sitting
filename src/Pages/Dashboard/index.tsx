@@ -30,6 +30,7 @@ import { DashboardView } from "@/enums";
 import TimelineView from "./components/timeline";
 
 import { exportDataAsCsv } from "@/util/helper";
+import { useI18n } from "@/Context/languageContext";
 
 const initDogOwnerInfo: DogOwner = { name: "", dogs: [], isFromWx: false };
 
@@ -53,6 +54,8 @@ const Dashboard: React.FC = () => {
 
   const [isExtracting, setIsExtracting] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     fetchAllData();
@@ -151,7 +154,7 @@ const Dashboard: React.FC = () => {
             onClick={handleOpenCreateTourModal}
             loading={isLoadingDogOwners}
           >
-            添加寄养
+            {t.addTour}
           </Button>
 
           <Button
@@ -162,7 +165,7 @@ const Dashboard: React.FC = () => {
             loading={isExtracting}
             onClick={handleExtractAndDownload}
           >
-            删除并备份已完成的寄养
+            {t.removeAndBackupTour}
           </Button>
         </div>
 
@@ -170,8 +173,12 @@ const Dashboard: React.FC = () => {
           value={dashboardView}
           onChange={(e) => setDashboardView(e.target.value)}
         >
-          <Radio.Button value={DashboardView.CALENDAR}>日历显示</Radio.Button>
-          <Radio.Button value={DashboardView.TIMELINE}>时间线显示</Radio.Button>
+          <Radio.Button value={DashboardView.CALENDAR}>
+            {t.displayCalendar}
+          </Radio.Button>
+          <Radio.Button value={DashboardView.TIMELINE}>
+            {t.displayLine}
+          </Radio.Button>
         </Radio.Group>
       </div>
 
@@ -192,17 +199,19 @@ const Dashboard: React.FC = () => {
       )}
 
       <Modal
-        title={<p>提示:</p>}
+        title={<p>{t.notice}</p>}
         footer={
           <>
-            <Button onClick={() => closePopUp()}>再等等</Button>
-            <Button onClick={() => handleOpenCreateTourModal()}>创建</Button>
+            <Button onClick={() => closePopUp()}>{t.later}</Button>
+            <Button onClick={() => handleOpenCreateTourModal()}>
+              {t.create}
+            </Button>
           </>
         }
         onCancel={closePopUp}
         open={openPopUp}
       >
-        您要现在为狗狗主人创建寄养吗？
+        {t.createTourUnderOwner}
       </Modal>
 
       <CreateDogTour
