@@ -97,6 +97,7 @@ requestInstance.interceptors.response.use(
       } catch (error) {
         const apiError = error as SignUpErrorResponse;
         dispatch(userLogout());
+        console.log(error);
         return apiError;
       }
     }
