@@ -91,13 +91,11 @@ requestInstance.interceptors.response.use(
           }
         } catch (err) {
           dispatch(userLogout());
-          console.log(err);
           return apiError;
         }
       } catch (error) {
         const apiError = error as SignUpErrorResponse;
         dispatch(userLogout());
-        console.log(error);
         return apiError;
       }
     }

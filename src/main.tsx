@@ -9,9 +9,9 @@ import store from "./store/index.ts";
 import { LanguageProvider } from "./Context/languageContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <Provider store={store}>
-    <LanguageProvider>
+  <LanguageProvider>
+    <Provider store={store}>
       <RouterProvider router={router}></RouterProvider>
-    </LanguageProvider>
-  </Provider>
+    </Provider>
+  </LanguageProvider>
 );
