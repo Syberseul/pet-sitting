@@ -1,5 +1,5 @@
 import { createDog, removeDog, updateDog } from "@/APIs/dogApi";
-import { getDogOwners, removeDogOwner } from "@/APIs/dogOwnerApi";
+import { getDogOwners, getUserRefNo, removeDogOwner } from "@/APIs/dogOwnerApi";
 import CreateDogOwner from "@/Components/CreateDogOwner";
 import EditDogOwner from "@/Components/EditDogOwner";
 
@@ -12,12 +12,20 @@ import { DogInfo, DogInfoCreate } from "@/Interface/dogInterface";
 import {
   DogOwner,
   getDogOwnersSuccess,
+  getUserRefCodeSuccess,
   isGetDogOwnerSuccess,
+  isGetUserRefCodeSuccess,
 } from "@/Interface/dogOwnerInterface";
 
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CopyOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
-import { Popconfirm, Table, Tooltip } from "antd";
+import { Popconfirm, Table, Tooltip, message } from "antd";
 import type { TableColumnsType } from "antd";
 
 import { useEffect, useState } from "react";
@@ -35,8 +43,11 @@ function DogOwnerList() {
   const [isAddDogModalOpen, setIsAddDogModalOpen] = useState(false);
   const [isEditDogModalOpen, setIsEditDogModalOpen] = useState(false);
   const [isModifyingDog, setIsModifyingDog] = useState(false);
+  const [isGeneratingRefCode, setIsGeneratingRefCode] = useState(false);
 
   const { t } = useI18n();
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     loadDogOwners();
@@ -58,7 +69,7 @@ function DogOwnerList() {
         <div style={{ display: "flex", gap: "10px" }}>
           <Tooltip placement="left" title={t.addDog} color="green">
             <PlusOutlined
-              style={{ cursor: "pointer", color: "green" }}
+              style={{ color: "green" }}
               onClick={() => {
                 setSelectedDogOwner(record);
                 setSelectedDog({
@@ -78,7 +89,7 @@ function DogOwnerList() {
           </Tooltip>
           <Tooltip placement="left" title={t.editDogOwner} color="blue">
             <EditOutlined
-              style={{ cursor: "pointer", color: "blue" }}
+              style={{ color: "blue" }}
               onClick={() => {
                 setSelectedDogOwner(record);
                 setIsEditDogOwnerModalOpen(true);
@@ -92,8 +103,24 @@ function DogOwnerList() {
               description={t.confirmRemoveDogOwnerText}
               onConfirm={(e) => handleRemoveDogOwner(e, record as DogOwner)}
             >
-              <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
+              <DeleteOutlined style={{ color: "red" }} />
             </Popconfirm>
+          </Tooltip>
+
+          <Tooltip
+            placement="left"
+            title={t.generateAndCopyRefNo}
+            color="yellow"
+          >
+            {isGeneratingRefCode &&
+            selectedDogOwner &&
+            selectedDogOwner.uid === record.uid ? (
+              <LoadingOutlined />
+            ) : (
+              <CopyOutlined
+                onClick={() => handleGenerateUserReferenceCode(record)}
+              />
+            )}
           </Tooltip>
         </div>
       ),
@@ -134,7 +161,7 @@ function DogOwnerList() {
         <div style={{ display: "flex", gap: "10px" }}>
           <Tooltip placement="left" title={t.editDog} color="blue">
             <EditOutlined
-              style={{ cursor: "pointer", color: "blue" }}
+              style={{ color: "blue" }}
               onClick={() => {
                 setSelectedDogOwner(owner);
                 setSelectedDog(record as DogInfo);
@@ -151,7 +178,7 @@ function DogOwnerList() {
               cancelText={t.cancel}
               okText={t.delete}
             >
-              <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
+              <DeleteOutlined style={{ color: "red" }} />
             </Popconfirm>
           </Tooltip>
         </div>
@@ -290,6 +317,48 @@ function DogOwnerList() {
     setIsModifyingDog(false);
   };
 
+  const handleGenerateUserReferenceCode = async (user: DogOwner) => {
+    const { uid, userRefNo } = user;
+
+    if (!uid || isGeneratingRefCode) return;
+
+    const _copyUserRefNo = async (refNo: string) => {
+      try {
+        await navigator.clipboard.writeText(refNo);
+        messageApi.open({
+          type: "success",
+          content: t.referenceNoCopySuccess,
+        });
+      } catch (error) {
+        console.error(`Failed copy reference No.: ${refNo}`);
+        messageApi.open({
+          type: "error",
+          content: t.referenceNoCopyFailed,
+        });
+      }
+    };
+
+    if (userRefNo) {
+      await _copyUserRefNo(userRefNo);
+      return;
+    }
+
+    setIsGeneratingRefCode(true);
+    setSelectedDogOwner(user);
+
+    const response = await getUserRefNo(uid);
+
+    if (isGetUserRefCodeSuccess(response)) {
+      const {
+        data: { userRefNo },
+      } = response as getUserRefCodeSuccess;
+      if (userRefNo) await _copyUserRefNo(userRefNo);
+    } else console.error("Failed to generate User Reference Code");
+
+    setIsGeneratingRefCode(false);
+    setSelectedDogOwner(null);
+  };
+
   const expandedRowRender = (dogOwner: DogOwner) => (
     <Table<DogInfo | DogInfoCreate>
       columns={expandedColumns(dogOwner)}
@@ -310,6 +379,7 @@ function DogOwnerList() {
     <LoadingList />
   ) : (
     <>
+      {contextHolder}
       <div
         style={{
           display: "flex",

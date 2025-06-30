@@ -71,12 +71,12 @@ const Dashboard: React.FC = () => {
     if (isGetTourSuccess(tours)) {
       const { data } = tours as getToursSuccess;
       setTours(data);
-    }
+    } else setTours([]);
 
     if (isGetDogOwnerSuccess(dogOwners)) {
       const { data } = dogOwners as getDogOwnersSuccess;
       dispatch(setDogOwners(data));
-    }
+    } else dispatch(setDogOwners([]));
 
     setIsLoadingData(false);
     setIsLoadingDogOwners(false);

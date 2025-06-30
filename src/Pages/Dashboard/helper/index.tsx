@@ -24,6 +24,16 @@ export const _analyzeDogToursByDate = (
 
   const targetDate = dayjs(date);
 
+  if (!tours?.length)
+    return {
+      activeCount: 0,
+      endingCount: 0,
+      startingCount: 0,
+      activeDogs: [],
+      endingDogs: [],
+      startingDogs: [],
+    };
+
   tours.forEach((tour) => {
     const logStart = dayjs(tour.startDate);
     const logEnd = dayjs(tour.endDate);

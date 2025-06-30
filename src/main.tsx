@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import "./firebase-config.ts";
+import "./firebase-config.js";
 import "./index.css";
 
 import { LanguageProvider } from "./Context/languageContext.tsx";

@@ -4,6 +4,7 @@ import {
   DogOwner,
   getDogOwnersFail,
   getDogOwnersSuccess,
+  getUserRefCodeSuccess,
 } from "@/Interface/dogOwnerInterface";
 import { http } from "@/util";
 
@@ -72,5 +73,21 @@ export const removeDogOwner = async (ownerId: string) => {
     return response.data;
   } catch (error) {
     return { error };
+  }
+};
+
+export const getUserRefNo = async (
+  userId: string
+): Promise<getUserRefCodeSuccess | getDogOwnersFail> => {
+  try {
+    const response = await http.request({
+      url: `/owner/getUserRefNo/${userId}`,
+      method: "GET",
+    });
+
+    return response.data;
+  } catch (error) {
+    const apiError = error as getDogOwnersFail;
+    return apiError;
   }
 };

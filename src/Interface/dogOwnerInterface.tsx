@@ -8,6 +8,7 @@ export interface DogOwner {
   contactNo?: string;
   userId?: string;
   uid?: string;
+  userRefNo?: string;
 }
 
 export interface CreateDogOwnerSuccessResponse {
@@ -36,6 +37,14 @@ export interface getDogOwnersFail {
 
 export const isGetDogOwnerSuccess = (
   res: getDogOwnersSuccess | getDogOwnersFail
-) => {
-  return !(res as getDogOwnersFail).error;
-};
+) => !(res as getDogOwnersFail).error;
+
+export interface getUserRefCodeSuccess {
+  data: {
+    userRefNo: string;
+  };
+}
+
+export const isGetUserRefCodeSuccess = (
+  res: getUserRefCodeSuccess | getDogOwnersFail
+) => !(res as getDogOwnersFail).error;

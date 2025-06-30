@@ -83,6 +83,9 @@ interface DogOwnerLanguage {
   ownerInfo: string;
   enterNameText: string;
   createTourUnderOwner: string;
+  referenceNoCopySuccess: string;
+  referenceNoCopyFailed: string;
+  generateAndCopyRefNo: string;
 }
 
 interface DogLanguage {
@@ -239,6 +242,9 @@ export const enLanguage: Language = {
   ownerInfo: "Owner Info",
   enterNameText: "Please enter name",
   createTourUnderOwner: "Create dog sitting for this owner now?",
+  referenceNoCopySuccess: "Reference number copied!",
+  referenceNoCopyFailed: "Failed copy reference number.",
+  generateAndCopyRefNo: "Generate and copy reference code",
 
   dogInfo: "Dog Info",
   dogName: "Dog Name",
@@ -377,6 +383,9 @@ export const zhLanguage: Language = {
   ownerInfo: "主人信息",
   enterNameText: "请输入姓名",
   createTourUnderOwner: "您要现在为狗狗主人创建寄养吗？",
+  referenceNoCopySuccess: "宠物主人对应号复制成功！",
+  referenceNoCopyFailed: "宠物主人对应号复制失败。",
+  generateAndCopyRefNo: "生成并复制对应号",
 
   dogInfo: "狗狗信息",
   dogName: "狗狗名字",
