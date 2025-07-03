@@ -21,6 +21,7 @@ import {
   CopyOutlined,
   DeleteOutlined,
   EditOutlined,
+  LinkOutlined,
   LoadingOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -109,13 +110,18 @@ function DogOwnerList() {
 
           <Tooltip
             placement="left"
-            title={t.generateAndCopyRefNo}
-            color="yellow"
+            title={
+              record.linkedDogOwner ? t.dogOwnerLinked : t.generateAndCopyRefNo
+            }
+            color="cyan"
           >
             {isGeneratingRefCode &&
             selectedDogOwner &&
-            selectedDogOwner.uid === record.uid ? (
+            selectedDogOwner.uid === record.uid &&
+            !selectedDogOwner?.linkedDogOwner ? (
               <LoadingOutlined />
+            ) : record.linkedDogOwner ? (
+              <LinkOutlined disabled style={{ color: "#08f" }} />
             ) : (
               <CopyOutlined
                 onClick={() => handleGenerateUserReferenceCode(record)}
@@ -197,10 +203,11 @@ function DogOwnerList() {
         data.map((d) => ({
           ...d,
           key: d.uid,
-          dogs: d.dogs.map((dog) => ({
-            ...dog,
-            key: dog.uid,
-          })),
+          dogs:
+            d.dogs?.map((dog) => ({
+              ...dog,
+              key: dog.uid,
+            })) || [],
         }))
       );
     }

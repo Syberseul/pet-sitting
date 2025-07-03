@@ -1,9 +1,11 @@
 import {
+  LinkUserErrorResponse,
   SignInRequest,
   SignUpErrorResponse,
   SignUpRequest,
   SignUpSuccessResponse,
 } from "@/Interface/authInterface";
+import { UserUpdateData } from "@/Interface/userInterface";
 
 import { http } from "@/util";
 
@@ -64,12 +66,28 @@ export const mapUsers = async () => {
   return response;
 };
 
-export const updateUser = async (userId: string, role: number) => {
+export const updateUserRole = async (userId: string, role: number) => {
   const response = await http.request({
     url: `users/updateUserRole/${userId}/${role}`,
     method: "PUT",
   });
   return response;
+};
+
+export const updateUser = async (
+  data: UserUpdateData
+): Promise<SignUpSuccessResponse | LinkUserErrorResponse> => {
+  try {
+    const response = await http.request({
+      url: `users/updateUser/${data.id}`,
+      method: "PUT",
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    const apiError = error as LinkUserErrorResponse;
+    return apiError;
+  }
 };
 
 export const updateUserReceiveNotification = async (

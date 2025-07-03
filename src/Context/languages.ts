@@ -49,6 +49,17 @@ interface UserListLanguage {
   confirmChangeRoleMidText: string;
   confirmChangeRoleEndText: string;
   confirmChangeRoleNoticeText: string;
+  linkUserAndDogOwner: string;
+  linkingUserAndDogOwner: string;
+  userLinkedWithDogOwner: string;
+  confirmLinkUserTitleText: string;
+  linkDogOwnerPromptText: string;
+  enterDogOwnerRefPlaceholderText: string;
+  linkUserSuccessTitle: string;
+  linkUserSuccessDescription: string;
+  linkUserFailTitle: string;
+  linkUserFailWithInvalidRef: string;
+  linkUserFailWithLinkedDogOwner: string;
 }
 
 interface RoleLanguage {
@@ -86,6 +97,7 @@ interface DogOwnerLanguage {
   referenceNoCopySuccess: string;
   referenceNoCopyFailed: string;
   generateAndCopyRefNo: string;
+  dogOwnerLinked: string;
 }
 
 interface DogLanguage {
@@ -216,6 +228,19 @@ export const enLanguage: Language = {
   confirmChangeRoleEndText: "",
   confirmChangeRoleNoticeText:
     "Notice: Change user role MAY CAUSE change of user permission!",
+  linkUserAndDogOwner: "Link dog owner",
+  linkingUserAndDogOwner: "Linking...",
+  userLinkedWithDogOwner: "Dog owner linked",
+  confirmLinkUserTitleText: "Link User to Dog Owner",
+  linkDogOwnerPromptText:
+    "Please enter or paste dog owner reference No. below:",
+  enterDogOwnerRefPlaceholderText: "Enter reference No. here",
+  linkUserSuccessTitle: "Link Dog Owner Success!",
+  linkUserSuccessDescription: "User has successfully linked to a dog owner.",
+  linkUserFailTitle: "Link Dog Owner Failed!",
+  linkUserFailWithInvalidRef: "Invalid dogOwner reference No.",
+  linkUserFailWithLinkedDogOwner:
+    "Selected dog owner already linked to another user, please try another dog owner reference No.",
 
   admin: "ADMIN",
   developer: "DEVELOPER",
@@ -245,6 +270,7 @@ export const enLanguage: Language = {
   referenceNoCopySuccess: "Reference number copied!",
   referenceNoCopyFailed: "Failed copy reference number.",
   generateAndCopyRefNo: "Generate and copy reference code",
+  dogOwnerLinked: "Dog owner linked to a user",
 
   dogInfo: "Dog Info",
   dogName: "Dog Name",
@@ -357,6 +383,18 @@ export const zhLanguage: Language = {
   confirmChangeRoleEndText: "吗",
   confirmChangeRoleNoticeText:
     "请注意：变更用户身份有可能会导致用户权限发生更改！",
+  linkUserAndDogOwner: "关联宠物主人",
+  linkingUserAndDogOwner: "关联中...",
+  userLinkedWithDogOwner: "已关联宠物主人",
+  confirmLinkUserTitleText: "关联 用户 与 宠物主人",
+  linkDogOwnerPromptText: "请在下方 输入 或 粘贴 宠物主人的关联号：",
+  enterDogOwnerRefPlaceholderText: "请输入 宠物主人 关联号",
+  linkUserSuccessTitle: "关联成功",
+  linkUserSuccessDescription: "成功关联 用户 与 宠物主人",
+  linkUserFailTitle: "关联失败",
+  linkUserFailWithInvalidRef: "无效的关联号",
+  linkUserFailWithLinkedDogOwner:
+    "关联号对应的宠物主人已关联其他用户，请尝试使用其他宠物主人的关联号",
 
   admin: "管理员",
   developer: "开发员",
@@ -385,7 +423,8 @@ export const zhLanguage: Language = {
   createTourUnderOwner: "您要现在为狗狗主人创建寄养吗？",
   referenceNoCopySuccess: "宠物主人对应号复制成功！",
   referenceNoCopyFailed: "宠物主人对应号复制失败。",
-  generateAndCopyRefNo: "生成并复制对应号",
+  generateAndCopyRefNo: "生成并复制关联号",
+  dogOwnerLinked: "宠物主人已关联用户",
 
   dogInfo: "狗狗信息",
   dogName: "狗狗名字",

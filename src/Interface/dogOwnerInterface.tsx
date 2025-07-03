@@ -9,6 +9,7 @@ export interface DogOwner {
   userId?: string;
   uid?: string;
   userRefNo?: string;
+  linkedDogOwner?: boolean;
 }
 
 export interface CreateDogOwnerSuccessResponse {

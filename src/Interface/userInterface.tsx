@@ -43,3 +43,11 @@ export interface UserRefreshTokenData {
   token: string;
   refreshToken: string;
 }
+
+export interface UserUpdateData {
+  id: string;
+  email?: string;
+  password?: string;
+  userName?: string;
+  dogOwnerRefNo?: string;
+}

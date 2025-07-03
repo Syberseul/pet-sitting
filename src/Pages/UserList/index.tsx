@@ -1,19 +1,42 @@
 import React, { useEffect, useState } from "react";
 
-import { Dropdown, Modal, Switch, Table, Tag } from "antd";
+import {
+  Button,
+  Dropdown,
+  Input,
+  Modal,
+  notification,
+  Switch,
+  Table,
+  Tag,
+} from "antd";
 
 import type { MenuProps, TableColumnsType } from "antd";
 
 import {
   getAllUsers,
-  updateUser,
+  updateUserRole,
   updateUserReceiveNotification,
+  updateUser,
 } from "@/APIs/userApi";
 
 import LoadingList from "@/Components/LoadingList";
 
 import { UserRole } from "@/enums";
+
 import { useI18n } from "@/Context/languageContext";
+
+import {
+  BugOutlined,
+  CheckOutlined,
+  LinkOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
+
+import {
+  isLinkUserSuccess,
+  LinkUserErrorResponse,
+} from "@/Interface/authInterface";
 
 interface UserData {
   email: string;
@@ -22,6 +45,7 @@ interface UserData {
   userName: string;
   validFcmTokens: number;
   receiveNotifications: boolean;
+  dogOwnerRefNo?: string;
 }
 
 interface ListTableProps {
@@ -35,6 +59,10 @@ function UserList() {
   const [selectedRole, setSelectedRole] = useState<number | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
+  const [showLinkUserModal, setShowLinkUserModal] = useState(false);
+  const [dogOwnerRefNo, setDogOwnerRefNo] = useState("");
+
+  const [api, contextHolder] = notification.useNotification();
 
   const { t } = useI18n();
 
@@ -56,13 +84,15 @@ function UserList() {
     const response = await getAllUsers();
 
     if (response.error) console.error(response.error);
-    else
+    else {
+      console.log(response);
       setUsers(
         response.map((data: { id: any }) => ({
           ...data,
           key: data.id,
         }))
       );
+    }
 
     setIsFetchingUsers(false);
   };
@@ -118,9 +148,50 @@ function UserList() {
         }}
         trigger={["click"]}
       >
-        <a onClick={(e) => e.preventDefault()}>
-          <RoleTag role={role} />
-        </a>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            <RoleTag role={role} />
+          </a>
+          {role === UserRole.DOG_OWNER ? (
+            user.dogOwnerRefNo ? (
+              <Button type="link" disabled={true}>
+                <div
+                  style={{ display: "flex", columnGap: "5px", color: "green" }}
+                >
+                  <CheckOutlined />
+                  <p>{t.userLinkedWithDogOwner}</p>
+                </div>
+              </Button>
+            ) : (
+              <Button
+                type="link"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedUser(user);
+                  setShowLinkUserModal(true);
+                }}
+                disabled={
+                  isUpdatingUser && selectedUser! && selectedUser.id === user.id
+                }
+                loading={isUpdatingUser}
+              >
+                <div style={{ display: "flex", columnGap: "5px" }}>
+                  {isUpdatingUser ? null : <LinkOutlined />}
+                  <p>
+                    {isUpdatingUser
+                      ? t.linkingUserAndDogOwner
+                      : t.linkUserAndDogOwner}
+                  </p>
+                </div>
+              </Button>
+            )
+          ) : null}
+        </div>
       </Dropdown>
     );
   };
@@ -149,6 +220,55 @@ function UserList() {
     setShowChangeRolePopup(true);
     setSelectedRole(Number(menuInfo.key));
     setSelectedUser(user);
+  };
+
+  const handleLinkDogOwner = async () => {
+    if (!selectedUser || isUpdatingUser || !dogOwnerRefNo) return;
+
+    const linkedData = {
+      ...selectedUser,
+      dogOwnerRefNo,
+    };
+
+    setIsUpdatingUser(true);
+
+    const response = await updateUser(linkedData);
+
+    if (isLinkUserSuccess(response) && response.dogOwnerRefNo && response.uid) {
+      const { uid, dogOwnerRefNo } = response;
+
+      setUsers(
+        users.map((u) => {
+          if (u.id === uid) return { ...u, dogOwnerRefNo };
+          return u;
+        })
+      );
+
+      api.open({
+        message: t.linkUserSuccessTitle,
+        description: t.linkUserSuccessDescription,
+        icon: <SmileOutlined style={{ color: "#0f96" }} />,
+      });
+    } else {
+      const {
+        details: { error },
+      } = response as LinkUserErrorResponse;
+      let errText = "";
+      if (error.includes("Invalid dogOwnerRefNo"))
+        errText = t.linkUserFailWithInvalidRef;
+      else if (error.includes("already linked to"))
+        errText = t.linkUserFailWithLinkedDogOwner;
+      api.open({
+        message: t.linkUserFailTitle,
+        description: errText,
+        icon: <BugOutlined style={{ color: "#f006" }} />,
+      });
+    }
+
+    setIsUpdatingUser(false);
+    setSelectedUser(null);
+    setDogOwnerRefNo("");
+    setShowLinkUserModal(false);
   };
 
   const handleToggleUserReceiveNotification = async (user: UserData) => {
@@ -250,7 +370,7 @@ function UserList() {
 
     setIsUpdatingUser(true);
 
-    const response = await updateUser(selectedUser!.id, selectedRole!);
+    const response = await updateUserRole(selectedUser!.id, selectedRole!);
 
     if (response?.status == 200) {
       const newUsers = users.map((user: UserData) => {
@@ -267,6 +387,7 @@ function UserList() {
     <LoadingList />
   ) : (
     <>
+      {contextHolder}
       <ListTable data={users} />
       <Modal
         title={t.editUserRole}
@@ -297,6 +418,27 @@ function UserList() {
 
         <p>{t.confirmChangeRoleNoticeText}</p>
       </Modal>
+      <Modal
+        title={t.confirmLinkUserTitleText}
+        open={showLinkUserModal}
+        onOk={async () => await handleLinkDogOwner()}
+        onCancel={() => {
+          setShowLinkUserModal(false);
+          setSelectedUser(null);
+          setDogOwnerRefNo("");
+        }}
+        okText={t.ok}
+        cancelText={t.cancel}
+        loading={isUpdatingUser}
+      >
+        <h3>{t.linkDogOwnerPromptText}</h3>
+        <Input
+          placeholder={t.enterDogOwnerRefPlaceholderText}
+          value={dogOwnerRefNo}
+          onChange={(e) => setDogOwnerRefNo(e.target.value || "")}
+        />
+      </Modal>
+      ;
     </>
   );
 }

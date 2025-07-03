@@ -12,6 +12,7 @@ export interface SignUpSuccessResponse {
   refreshToken: string;
   role: number;
   customToken: string;
+  dogOwnerRefNo?: string;
 }
 
 export interface SignUpErrorResponse {
@@ -19,8 +20,22 @@ export interface SignUpErrorResponse {
   code: number;
 }
 
+export interface LinkUserErrorResponse {
+  code: number;
+  details: {
+    code: number;
+    error: string;
+  };
+}
+
 export const isSignUpSuccess = (
   res: SignUpSuccessResponse | SignUpErrorResponse
+): res is SignUpSuccessResponse => {
+  return (res as SignUpSuccessResponse).uid != undefined;
+};
+
+export const isLinkUserSuccess = (
+  res: SignUpSuccessResponse | LinkUserErrorResponse
 ): res is SignUpSuccessResponse => {
   return (res as SignUpSuccessResponse).uid != undefined;
 };
