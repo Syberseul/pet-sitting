@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Button,
@@ -11,7 +11,7 @@ import {
   Tag,
 } from "antd";
 
-import type { MenuProps, TableColumnsType } from "antd";
+import type { InputRef, MenuProps, TableColumnsType } from "antd";
 
 import {
   getAllUsers,
@@ -78,21 +78,30 @@ function UserList() {
     }
   }, [showChangeRolePopup]);
 
+  useEffect(() => {
+    if (showLinkUserModal && dogOwnerInputRef.current) {
+      const timer = setTimeout(() => {
+        dogOwnerInputRef.current!.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showLinkUserModal]);
+
+  const dogOwnerInputRef = useRef<InputRef>(null);
+
   const loadUsers = async () => {
     setIsFetchingUsers(true);
 
     const response = await getAllUsers();
 
     if (response.error) console.error(response.error);
-    else {
-      console.log(response);
+    else
       setUsers(
         response.map((data: { id: any }) => ({
           ...data,
           key: data.id,
         }))
       );
-    }
 
     setIsFetchingUsers(false);
   };
@@ -433,6 +442,7 @@ function UserList() {
       >
         <h3>{t.linkDogOwnerPromptText}</h3>
         <Input
+          ref={dogOwnerInputRef}
           placeholder={t.enterDogOwnerRefPlaceholderText}
           value={dogOwnerRefNo}
           onChange={(e) => setDogOwnerRefNo(e.target.value || "")}
