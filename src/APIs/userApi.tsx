@@ -66,10 +66,17 @@ export const mapUsers = async () => {
   return response;
 };
 
-export const updateUserRole = async (userId: string, role: number) => {
+export const updateUserRole = async (
+  userId: string,
+  data: {
+    role: number;
+    dogOwnerRefNo?: string;
+  }
+) => {
   const response = await http.request({
-    url: `users/updateUserRole/${userId}/${role}`,
+    url: `users/updateUserRole/${userId}`,
     method: "PUT",
+    data,
   });
   return response;
 };
@@ -99,4 +106,19 @@ export const updateUserReceiveNotification = async (
     method: "PUT",
   });
   return response;
+};
+
+export const disconnectUserAndDogOwner = async (
+  userId: string
+): Promise<UserUpdateData | LinkUserErrorResponse> => {
+  try {
+    const response = await http.request({
+      url: `users/removeLinkedDogOwner/${userId}`,
+      method: "POST",
+    });
+    return response.data;
+  } catch (error) {
+    const apiError = error as LinkUserErrorResponse;
+    return apiError;
+  }
 };

@@ -1,0 +1,28 @@
+.icon-text-swap-button {
+  --normal-color: green;
+  --hover-color: #ff4d4f;
+}
+
+/* 默认状态 */
+.default-icon,
+.default-text {
+  opacity: 1;
+  color: var(--normal-color);
+  transition: all 0.3s ease;
+}
+.hover-icon,
+.hover-text {
+  opacity: 0;
+  color: var(--hover-color);
+  transition: all 0.3s ease;
+}
+
+/* Hover状态 */
+.icon-text-swap-button:hover .default-icon,
+.icon-text-swap-button:hover .default-text {
+  opacity: 0;
+}
+.icon-text-swap-button:hover .hover-icon,
+.icon-text-swap-button:hover .hover-text {
+  opacity: 1;
+}

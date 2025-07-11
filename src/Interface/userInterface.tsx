@@ -1,4 +1,5 @@
 import { UserRole } from "@/enums";
+import { LinkUserErrorResponse } from "./authInterface";
 
 export interface Props {
   toggleShowSignUp: () => void;
@@ -51,3 +52,9 @@ export interface UserUpdateData {
   userName?: string;
   dogOwnerRefNo?: string;
 }
+
+export const isUserUpdateSuccess = (
+  res: UserUpdateData | LinkUserErrorResponse
+): res is UserUpdateData => {
+  return (res as UserUpdateData).id != undefined;
+};

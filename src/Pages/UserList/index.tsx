@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 import {
   Button,
+  Divider,
   Dropdown,
   Input,
   Modal,
   notification,
+  Popconfirm,
+  Select,
   Switch,
   Table,
   Tag,
@@ -18,6 +21,7 @@ import {
   updateUserRole,
   updateUserReceiveNotification,
   updateUser,
+  disconnectUserAndDogOwner,
 } from "@/APIs/userApi";
 
 import LoadingList from "@/Components/LoadingList";
@@ -29,7 +33,9 @@ import { useI18n } from "@/Context/languageContext";
 import {
   BugOutlined,
   CheckOutlined,
+  DisconnectOutlined,
   LinkOutlined,
+  LoadingOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
 
@@ -37,6 +43,16 @@ import {
   isLinkUserSuccess,
   LinkUserErrorResponse,
 } from "@/Interface/authInterface";
+
+import "./index.css";
+import { isUserUpdateSuccess } from "@/Interface/userInterface";
+import {
+  DogOwner,
+  getDogOwnersSuccess,
+  isGetDogOwnerSuccess,
+} from "@/Interface/dogOwnerInterface";
+import { getDogOwners } from "@/APIs/dogOwnerApi";
+import CreateDogOwner from "@/Components/CreateDogOwner";
 
 interface UserData {
   email: string;
@@ -46,10 +62,16 @@ interface UserData {
   validFcmTokens: number;
   receiveNotifications: boolean;
   dogOwnerRefNo?: string;
+  updating: boolean;
 }
 
 interface ListTableProps {
   data: UserData[];
+}
+
+interface DogOwnerInfo extends DogOwner {
+  value: string;
+  label: string;
 }
 
 function UserList() {
@@ -61,6 +83,9 @@ function UserList() {
   const [isUpdatingUser, setIsUpdatingUser] = useState(false);
   const [showLinkUserModal, setShowLinkUserModal] = useState(false);
   const [dogOwnerRefNo, setDogOwnerRefNo] = useState("");
+  const [dogOwners, setDogOwners] = useState<DogOwnerInfo[]>([]);
+  const [isLoadingDogOwners, setIsLoadingDogOwners] = useState(false);
+  const [dogOwnerFetched, setDogOwnerFetched] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -71,11 +96,7 @@ function UserList() {
   }, []);
 
   useEffect(() => {
-    if (!showChangeRolePopup) {
-      setSelectedRole(null);
-      setSelectedUser(null);
-      setIsUpdatingUser(false);
-    }
+    if (!showChangeRolePopup) resetUpdateUserInfo();
   }, [showChangeRolePopup]);
 
   useEffect(() => {
@@ -168,14 +189,88 @@ function UserList() {
           </a>
           {role === UserRole.DOG_OWNER ? (
             user.dogOwnerRefNo ? (
-              <Button type="link" disabled={true}>
-                <div
-                  style={{ display: "flex", columnGap: "5px", color: "green" }}
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <Button
+                  type="link"
+                  className="icon-text-swap-button"
+                  style={{
+                    position: "relative",
+                    overflow: "hidden",
+                    padding: "4px 8px",
+                    width: "100%",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
-                  <CheckOutlined />
-                  <p>{t.userLinkedWithDogOwner}</p>
-                </div>
-              </Button>
+                  <div
+                    style={{
+                      display: "flex",
+                      columnGap: "5px",
+                      position: "relative",
+                    }}
+                  >
+                    {/* Default icon & text */}
+                    {user.updating ? (
+                      <LoadingOutlined className="default-icon" />
+                    ) : (
+                      <CheckOutlined className="default-icon" />
+                    )}
+                    <span className="default-text">
+                      {user.updating ? t.updating : t.userLinkedWithDogOwner}
+                    </span>
+
+                    {/* Hover icon & text */}
+                    {user.updating ? (
+                      <LoadingOutlined
+                        className="hover-icon"
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      />
+                    ) : (
+                      <DisconnectOutlined
+                        className="hover-icon"
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      />
+                    )}
+                    <Popconfirm
+                      title={t.disconnectDogOwnerPrompt}
+                      description={`${t.confirmDisconnectDogOwnerPromptText}?`}
+                      onConfirm={async (e) => {
+                        e?.stopPropagation();
+                        await handleDisconnectUserAndDogOwner(user);
+                      }}
+                      okText={t.disconnect}
+                      okType="danger"
+                      cancelText={t.notNow}
+                      disabled={user.updating}
+                    >
+                      <span
+                        className="hover-text"
+                        style={{
+                          position: "absolute",
+                          left: "24px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      >
+                        {user.updating
+                          ? t.updating
+                          : t.disconnectWithDogOwnerText}
+                      </span>
+                    </Popconfirm>
+                  </div>
+                </Button>
+              </div>
             ) : (
               <Button
                 type="link"
@@ -184,15 +279,13 @@ function UserList() {
                   setSelectedUser(user);
                   setShowLinkUserModal(true);
                 }}
-                disabled={
-                  isUpdatingUser && selectedUser! && selectedUser.id === user.id
-                }
-                loading={isUpdatingUser}
+                disabled={selectedUser?.id === user.id}
+                loading={user.updating}
               >
                 <div style={{ display: "flex", columnGap: "5px" }}>
-                  {isUpdatingUser ? null : <LinkOutlined />}
+                  {user.updating ? null : <LinkOutlined />}
                   <p>
-                    {isUpdatingUser
+                    {user.updating
                       ? t.linkingUserAndDogOwner
                       : t.linkUserAndDogOwner}
                   </p>
@@ -225,10 +318,40 @@ function UserList() {
     );
   };
 
-  const handleSelectRole = (user: UserData, menuInfo: { key: React.Key }) => {
+  const handleSelectRole = async (
+    user: UserData,
+    menuInfo: { key: React.Key }
+  ) => {
+    const selectedRole = Number(menuInfo.key);
     setShowChangeRolePopup(true);
-    setSelectedRole(Number(menuInfo.key));
+    setSelectedRole(selectedRole);
     setSelectedUser(user);
+
+    if (
+      selectedRole === UserRole.DOG_OWNER &&
+      user.role === UserRole.VISITOR &&
+      !dogOwnerFetched
+    ) {
+      setIsLoadingDogOwners(true);
+
+      const response = await getDogOwners();
+
+      if (isGetDogOwnerSuccess(response)) {
+        setDogOwnerFetched(true);
+        const { data } = response as getDogOwnersSuccess;
+        setDogOwners(
+          data
+            .filter((d) => !d.linkedDogOwner)
+            .map((d) => ({
+              ...d,
+              value: d.uid!,
+              label: d.name ?? "Unknown",
+            }))
+        );
+      }
+
+      setIsLoadingDogOwners(false);
+    }
   };
 
   const handleLinkDogOwner = async () => {
@@ -240,6 +363,13 @@ function UserList() {
     };
 
     setIsUpdatingUser(true);
+    setUsers(
+      users.map((u) => {
+        if (u.id === selectedUser.id)
+          return { ...u, dogOwnerRefNo, updating: true };
+        return u;
+      })
+    );
 
     const response = await updateUser(linkedData);
 
@@ -248,7 +378,7 @@ function UserList() {
 
       setUsers(
         users.map((u) => {
-          if (u.id === uid) return { ...u, dogOwnerRefNo };
+          if (u.id === uid) return { ...u, dogOwnerRefNo, updating: false };
           return u;
         })
       );
@@ -272,12 +402,55 @@ function UserList() {
         description: errText,
         icon: <BugOutlined style={{ color: "#f006" }} />,
       });
+      setUsers(users.map((u) => ({ ...u, updating: false })));
     }
 
     setIsUpdatingUser(false);
     setSelectedUser(null);
     setDogOwnerRefNo("");
     setShowLinkUserModal(false);
+  };
+
+  const handleDisconnectUserAndDogOwner = async (user: UserData) => {
+    if (isUpdatingUser) return;
+
+    setSelectedUser(user);
+    setUsers(
+      users.map((u) => {
+        if (u.id === user.id) return { ...u, updating: true };
+        return u;
+      })
+    );
+    setIsUpdatingUser(true);
+
+    const res = await disconnectUserAndDogOwner(user.id);
+
+    if (isUserUpdateSuccess(res)) {
+      const { id, dogOwnerRefNo } = res;
+
+      setUsers(
+        users.map((u) => {
+          if (u.id === id) return { ...u, dogOwnerRefNo, updating: false };
+          return u;
+        })
+      );
+
+      api.open({
+        message: t.unlinkUserSuccessTitle,
+        description: t.unlinkUserSuccessDescription,
+        icon: <SmileOutlined style={{ color: "#0f96" }} />,
+      });
+
+      // here as disconnect user and dog owner, when open modal change role from VISITOR to DOG OWNER, such disconnected dog owner need to show again
+      setDogOwnerFetched(false);
+    } else {
+      api.open({
+        message: t.unlinkUserFailTitle,
+        icon: <SmileOutlined style={{ color: "#f006" }} />,
+      });
+      setUsers(users.map((u) => ({ ...u, updating: false })));
+    }
+    resetUpdateUserInfo();
   };
 
   const handleToggleUserReceiveNotification = async (user: UserData) => {
@@ -291,17 +464,23 @@ function UserList() {
       user.receiveNotifications ? 0 : 1
     );
 
-    if (response?.status == 200) {
-      const newUsers = users.map((usr: UserData) => {
-        if (usr.id != user!.id) return usr;
-        return {
-          ...usr,
-          receiveNotifications: !user.receiveNotifications,
-        };
-      });
-      setUsers(newUsers);
-    }
+    if (response?.status == 200)
+      setUsers(
+        users.map((usr: UserData) => {
+          if (usr.id != user!.id) return usr;
+          return {
+            ...usr,
+            receiveNotifications: !user.receiveNotifications,
+          };
+        })
+      );
 
+    setSelectedUser(null);
+    setIsUpdatingUser(false);
+  };
+
+  const resetUpdateUserInfo = () => {
+    setSelectedRole(null);
     setSelectedUser(null);
     setIsUpdatingUser(false);
   };
@@ -377,19 +556,44 @@ function UserList() {
   const handleConfirmChangeUserRole = async () => {
     if (!selectedUser) return;
 
+    const isRoleFromVisitorToDogOwner =
+      selectedRole === UserRole.DOG_OWNER &&
+      selectedUser.role === UserRole.VISITOR;
+
+    if (isRoleFromVisitorToDogOwner && !dogOwnerRefNo) return;
+
     setIsUpdatingUser(true);
 
-    const response = await updateUserRole(selectedUser!.id, selectedRole!);
+    const response = await updateUserRole(selectedUser!.id, {
+      role: selectedRole!,
+    });
 
     if (response?.status == 200) {
+      const {
+        data: { data },
+      } = response;
+
+      if (isRoleFromVisitorToDogOwner) await handleLinkDogOwner();
+
       const newUsers = users.map((user: UserData) => {
         if (user.id != selectedUser.id) return user;
-        return { ...user, role: selectedRole };
+
+        if (isRoleFromVisitorToDogOwner) data.dogOwnerRefNo = dogOwnerRefNo;
+
+        return { ...user, ...data };
       });
       setUsers(newUsers);
     }
 
     setShowChangeRolePopup(false);
+  };
+
+  const handleCreateDogOwner = (ownerInfo: DogOwner) => {
+    setDogOwners([
+      ...dogOwners,
+      { ...ownerInfo, value: ownerInfo.uid!, label: ownerInfo.name },
+    ]);
+    setDogOwnerRefNo(ownerInfo.uid!);
   };
 
   return isFetchingUsers ? (
@@ -398,20 +602,28 @@ function UserList() {
     <>
       {contextHolder}
       <ListTable data={users} />
+      {/* Change User Role Modal */}
       <Modal
         title={t.editUserRole}
         closable={{ "aria-label": "Custom Close Button" }}
         open={showChangeRolePopup}
         onOk={handleConfirmChangeUserRole}
-        onCancel={() => setShowChangeRolePopup(false)}
+        okText={t.ok}
+        onCancel={() => {
+          setShowChangeRolePopup(false);
+          setDogOwnerRefNo("");
+        }}
+        cancelText={t.cancel}
         okButtonProps={{
           loading: isUpdatingUser,
+          disabled:
+            selectedUser?.role! === UserRole.VISITOR &&
+            selectedRole === UserRole.DOG_OWNER &&
+            !dogOwnerRefNo,
         }}
         cancelButtonProps={{
           loading: isUpdatingUser,
         }}
-        cancelText={t.cancel}
-        okText={t.ok}
       >
         <p>
           {t.confirmChangeRolePreText +
@@ -426,7 +638,53 @@ function UserList() {
         </p>
 
         <p>{t.confirmChangeRoleNoticeText}</p>
+
+        {selectedUser &&
+        selectedUser.role === UserRole.VISITOR &&
+        selectedRole === UserRole.DOG_OWNER ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              rowGap: "10px",
+            }}
+          >
+            <Divider style={{ borderColor: "#7cb305" }}>
+              {t.selectExistingOrCreateNewToLinkTo}
+            </Divider>
+            <div
+              style={{
+                display: "flex",
+                columnGap: "10px",
+                alignItems: "center",
+              }}
+            >
+              <p style={{ margin: 0 }}>{t.selectDogOwner}: </p>
+              {isLoadingDogOwners ? (
+                <LoadingOutlined />
+              ) : (
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  placeholder="Search to Select"
+                  optionFilterProp="label"
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  options={dogOwners}
+                  onSelect={(value) => setDogOwnerRefNo(value)}
+                  value={dogOwnerRefNo}
+                />
+              )}
+              <p>{t.or}</p>
+            </div>
+            <CreateDogOwner afterCreate={handleCreateDogOwner} />
+          </div>
+        ) : null}
       </Modal>
+      {/* Link User to Dog Owner Modal */}
       <Modal
         title={t.confirmLinkUserTitleText}
         open={showLinkUserModal}

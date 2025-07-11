@@ -18,6 +18,7 @@ interface GeneralLanguage {
   notNow: string;
   day: string;
   days: string;
+  disconnect: string;
 }
 
 interface AuthLanguage {
@@ -52,14 +53,21 @@ interface UserListLanguage {
   linkUserAndDogOwner: string;
   linkingUserAndDogOwner: string;
   userLinkedWithDogOwner: string;
+  disconnectWithDogOwnerText: string;
+  disconnectDogOwnerPrompt: string;
+  confirmDisconnectDogOwnerPromptText: string;
   confirmLinkUserTitleText: string;
   linkDogOwnerPromptText: string;
   enterDogOwnerRefPlaceholderText: string;
   linkUserSuccessTitle: string;
+  unlinkUserSuccessTitle: string;
   linkUserSuccessDescription: string;
+  unlinkUserSuccessDescription: string;
   linkUserFailTitle: string;
+  unlinkUserFailTitle: string;
   linkUserFailWithInvalidRef: string;
   linkUserFailWithLinkedDogOwner: string;
+  selectExistingOrCreateNewToLinkTo: string;
 }
 
 interface RoleLanguage {
@@ -202,6 +210,7 @@ export const enLanguage: Language = {
   notNow: "Not Now",
   day: "Day",
   days: "Days",
+  disconnect: "Disconnect",
 
   email: "Email",
   password: "Password",
@@ -231,16 +240,26 @@ export const enLanguage: Language = {
   linkUserAndDogOwner: "Link dog owner",
   linkingUserAndDogOwner: "Linking...",
   userLinkedWithDogOwner: "Dog owner linked",
+  disconnectWithDogOwnerText: "Disconnect",
+  disconnectDogOwnerPrompt: "Disconnect dog owner",
+  confirmDisconnectDogOwnerPromptText:
+    "Are you sure to disconnect dog owner from this user",
   confirmLinkUserTitleText: "Link User to Dog Owner",
   linkDogOwnerPromptText:
     "Please enter or paste dog owner reference No. below:",
   enterDogOwnerRefPlaceholderText: "Enter reference No. here",
   linkUserSuccessTitle: "Link Dog Owner Success!",
-  linkUserSuccessDescription: "User has successfully linked to a dog owner.",
+  unlinkUserSuccessTitle: "Unlink Dog Owner Success!",
+  linkUserSuccessDescription: "User has successfully LINKED to a dog owner.",
+  unlinkUserSuccessDescription:
+    "User has successfully UNLINKED to the linked dog owner.",
   linkUserFailTitle: "Link Dog Owner Failed!",
+  unlinkUserFailTitle: "Unlink Dog Owner Failed!",
   linkUserFailWithInvalidRef: "Invalid dogOwner reference No.",
   linkUserFailWithLinkedDogOwner:
     "Selected dog owner already linked to another user, please try another dog owner reference No.",
+  selectExistingOrCreateNewToLinkTo:
+    "Select existing or Create new dog owner to link to",
 
   admin: "ADMIN",
   developer: "DEVELOPER",
@@ -357,6 +376,7 @@ export const zhLanguage: Language = {
   notNow: "暂时不",
   day: "天",
   days: "天",
+  disconnect: "断联",
 
   email: "邮箱",
   password: "密码",
@@ -386,15 +406,22 @@ export const zhLanguage: Language = {
   linkUserAndDogOwner: "关联宠物主人",
   linkingUserAndDogOwner: "关联中...",
   userLinkedWithDogOwner: "已关联宠物主人",
+  disconnectWithDogOwnerText: "断联宠物主人",
+  disconnectDogOwnerPrompt: "断联宠物主人",
+  confirmDisconnectDogOwnerPromptText: "确认取消已关联的宠物主人",
   confirmLinkUserTitleText: "关联 用户 与 宠物主人",
   linkDogOwnerPromptText: "请在下方 输入 或 粘贴 宠物主人的关联号：",
   enterDogOwnerRefPlaceholderText: "请输入 宠物主人 关联号",
   linkUserSuccessTitle: "关联成功",
+  unlinkUserSuccessTitle: "断联成功",
   linkUserSuccessDescription: "成功关联 用户 与 宠物主人",
+  unlinkUserSuccessDescription: "成功取消关联 用户 与 宠物主人",
   linkUserFailTitle: "关联失败",
+  unlinkUserFailTitle: "断联失败",
   linkUserFailWithInvalidRef: "无效的关联号",
   linkUserFailWithLinkedDogOwner:
     "关联号对应的宠物主人已关联其他用户，请尝试使用其他宠物主人的关联号",
+  selectExistingOrCreateNewToLinkTo: "选择或创建新的宠物主人来关联",
 
   admin: "管理员",
   developer: "开发员",
@@ -421,8 +448,8 @@ export const zhLanguage: Language = {
   ownerInfo: "主人信息",
   enterNameText: "请输入姓名",
   createTourUnderOwner: "您要现在为狗狗主人创建寄养吗？",
-  referenceNoCopySuccess: "宠物主人对应号复制成功！",
-  referenceNoCopyFailed: "宠物主人对应号复制失败。",
+  referenceNoCopySuccess: "宠物主人关联号复制成功！",
+  referenceNoCopyFailed: "宠物主人关联号复制失败。",
   generateAndCopyRefNo: "生成并复制关联号",
   dogOwnerLinked: "宠物主人已关联用户",
 
