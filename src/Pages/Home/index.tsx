@@ -34,6 +34,20 @@ const App: React.FC = () => {
 
       setSelectedKey([routeKey]);
       navigate(routeKey);
+    } else {
+      try {
+        setSelectedKey([location.pathname]);
+        navigate(location.pathname);
+      } catch (err) {
+        location.pathname = "/";
+        let routeKey = location.pathname;
+        if (user.role === UserRole.ADMIN || user.role === UserRole.DEVELOPER)
+          routeKey = "/dashboard";
+        else routeKey = "/introduction";
+
+        setSelectedKey([routeKey]);
+        navigate(routeKey);
+      }
     }
   }, [location.pathname, user.role]);
 

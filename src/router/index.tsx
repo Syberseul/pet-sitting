@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
 import { ProtectedRoutes } from "./ProtectedRoute";
+import { UserRole } from "@/enums";
 
 const lazyLoad = (factory: () => Promise<{ default: React.ComponentType }>) => {
   const Component = lazy(factory);
@@ -24,31 +25,53 @@ export const router = createBrowserRouter([
       },
       {
         path: "/details/:id?",
-        element: lazyLoad(() => import("@/Pages/Details")),
+        element: (
+          <ProtectedRoutes allowedRoles={[UserRole.ADMIN]}>
+            {lazyLoad(() => import("@/Pages/Details"))}
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/dashboard",
         element: (
-          <ProtectedRoutes>
+          <ProtectedRoutes allowedRoles={[UserRole.ADMIN, UserRole.DEVELOPER]}>
             {lazyLoad(() => import("@/Pages/Dashboard"))}
           </ProtectedRoutes>
         ),
       },
       {
         path: "/introduction",
-        element: lazyLoad(() => import("@/Pages/Introduction")),
+        element: (
+          <ProtectedRoutes
+            allowedRoles={[UserRole.DOG_OWNER, UserRole.VISITOR]}
+          >
+            {lazyLoad(() => import("@/Pages/Introduction"))}
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/owners",
-        element: lazyLoad(() => import("@/Pages/DogOwnerList")),
+        element: (
+          <ProtectedRoutes allowedRoles={[UserRole.ADMIN, UserRole.DEVELOPER]}>
+            {lazyLoad(() => import("@/Pages/DogOwnerList"))}
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/users",
-        element: lazyLoad(() => import("@/Pages/UserList")),
+        element: (
+          <ProtectedRoutes allowedRoles={[UserRole.ADMIN, UserRole.DEVELOPER]}>
+            {lazyLoad(() => import("@/Pages/UserList"))}
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/tours",
-        element: lazyLoad(() => import("@/Pages/TourList")),
+        element: (
+          <ProtectedRoutes allowedRoles={[UserRole.DOG_OWNER]}>
+            {lazyLoad(() => import("@/Pages/TourList"))}
+          </ProtectedRoutes>
+        ),
       },
     ],
   },
