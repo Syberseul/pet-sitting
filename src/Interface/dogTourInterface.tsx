@@ -46,7 +46,20 @@ export interface getToursFail {
   details: string;
 }
 
+export interface getDogOwnerTourSuccess {
+  data: {
+    count: number;
+    tours: { [key: string]: DogTourInfo[] };
+  };
+}
+
 export const isGetTourSuccess = (res: getToursSuccess | getToursFail) => {
+  return !(res as getToursFail).error;
+};
+
+export const isGetDogOwnerTourSuccess = (
+  res: getDogOwnerTourSuccess | getToursFail
+) => {
   return !(res as getToursFail).error;
 };
 

@@ -27,4 +27,6 @@ export enum TourStatus {
   "PENDING" = 0,
   "DELIVERED" = 1,
   "FINISHED" = 2,
+  "PENDING_APPROVAL" = 3,
+  "RECEIVING_APPROVED" = 4,
 }

@@ -2,6 +2,7 @@ import {
   CreateTourFail,
   CreateTourSuccess,
   DogTourInfo,
+  getDogOwnerTourSuccess,
   getToursFail,
   getToursSuccess,
   markTourFinishSuccess,
@@ -59,7 +60,9 @@ export const deleteTour = async (
   }
 };
 
-export const getTours = async (): Promise<getToursSuccess | getToursFail> => {
+export const getTours = async (): Promise<
+  getToursSuccess | getDogOwnerTourSuccess | getToursFail
+> => {
   try {
     const response = await http.request({
       url: "tour/getTours",
@@ -72,6 +75,22 @@ export const getTours = async (): Promise<getToursSuccess | getToursFail> => {
     return apiError;
   }
 };
+
+// export const getDogOwnerTours = async (): Promise<
+//   getDogOwnerTourSuccess | getToursFail
+// > => {
+//   try {
+//     const response = await http.request({
+//       url: "tour/getTours",
+//       method: "GET",
+//     });
+
+//     return response;
+//   } catch (error) {
+//     const apiError = error as getToursFail;
+//     return apiError;
+//   }
+// };
 
 export const markTourFinish = async (
   id: string

@@ -42,6 +42,7 @@ interface RouteLanguage {
   ownersPage: string;
   usersPage: string;
   toursPage: string;
+  dogsPage: string;
 }
 
 interface UserListLanguage {
@@ -178,6 +179,10 @@ interface DogTourLanguage {
   tourFinished: string;
 }
 
+interface ToursListLanguage {
+  tourListHeaderNotice: string;
+}
+
 type Language = GeneralLanguage &
   AuthLanguage &
   RouteLanguage &
@@ -188,7 +193,8 @@ type Language = GeneralLanguage &
   DogOwnerLanguage &
   DogLanguage &
   CalendarLanguage &
-  DogTourLanguage;
+  DogTourLanguage &
+  ToursListLanguage;
 
 export const enLanguage: Language = {
   or: "OR",
@@ -230,6 +236,7 @@ export const enLanguage: Language = {
   ownersPage: "Owners",
   usersPage: "Users",
   toursPage: "Tours",
+  dogsPage: "Dogs",
 
   editUserRole: "Change User Role",
   confirmChangeRolePreText: "Are you sure to change user role from",
@@ -354,6 +361,9 @@ export const enLanguage: Language = {
   confirmDeleteTour: "Are you sure to delete this tour?",
   markAsFinish: "Mark tour finish",
   tourFinished: "Finished",
+
+  tourListHeaderNotice:
+    "For security reason, only MOST RECENT 5 tours will be shown.",
 };
 
 export const zhLanguage: Language = {
@@ -395,7 +405,8 @@ export const zhLanguage: Language = {
   introPage: "首页",
   ownersPage: "宠物主人",
   usersPage: "用户管理",
-  toursPage: "旅行信息",
+  toursPage: "寄养信息",
+  dogsPage: "宠物列表",
 
   editUserRole: "修改用户身份",
   confirmChangeRolePreText: "确定要将用户的身份从",
@@ -516,4 +527,6 @@ export const zhLanguage: Language = {
   confirmDeleteTour: "确定删除本次寄养？",
   markAsFinish: "标记寄养完成",
   tourFinished: "寄养完成",
+
+  tourListHeaderNotice: "出于安全考虑，只显示最近 5 次寄养信息",
 };

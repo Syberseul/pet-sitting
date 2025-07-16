@@ -73,6 +73,14 @@ export const router = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/dogs",
+        element: (
+          <ProtectedRoutes allowedRoles={[UserRole.DOG_OWNER]}>
+            {lazyLoad(() => import("@/Pages/DogsInfo"))}
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
 ]);

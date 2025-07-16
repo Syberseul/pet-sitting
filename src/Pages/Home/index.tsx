@@ -77,6 +77,11 @@ const App: React.FC = () => {
             label: t.toursPage,
             hidden: user.role !== UserRole.DOG_OWNER,
           },
+          {
+            key: "/dogs",
+            label: t.dogsPage,
+            hidden: user.role !== UserRole.DOG_OWNER,
+          },
         ]
       : []),
   ];
