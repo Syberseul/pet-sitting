@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
     const tours = await getTours();
     const dogOwners = await getDogOwners();
 
-    if (isGetTourSuccess(tours)) {
+    if (isGetTourSuccess(tours as getToursSuccess)) {
       const { data } = tours as getToursSuccess;
       setTours(data);
     } else setTours([]);
